@@ -55,12 +55,12 @@ namespace Gempoll
         /// <summary>
         ///     层的列数
         /// </summary>
-        private readonly int columnCount;
+        public readonly int columnCount;
 
         /// <summary>
         ///     总层数
         /// </summary>
-        private readonly int floorCount;
+        public readonly int floorCount;
 
         private readonly List<Node> list;
 
@@ -92,11 +92,13 @@ namespace Gempoll
         /// <summary>
         ///     层的行数
         /// </summary>
-        private readonly int rowCount;
+        public readonly int rowCount;
 
         /// <summary>
         ///     楼梯
-        ///     up 0,1  down 2,3
+        ///     <para>默认每个层最多只有一个向上楼梯和一个向下楼梯</para>
+        ///     <para>第1维: 楼层编号</para>
+        ///     <para>第2维: 4个整型, 代表向上楼梯的坐标, 和向下楼梯的坐标</para>
         /// </summary>
         private readonly int[][] stair;
 
@@ -105,6 +107,12 @@ namespace Gempoll
         private Shop shop;
 
         private bool shouldEat;
+
+        private bool shouldMerge;
+
+        private Hero hero;
+
+        public Node heroNode;
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
@@ -162,15 +170,21 @@ namespace Gempoll
             int x = scanner.NextInt();
             int y = scanner.NextInt();
 
-            var hero = new Hero(hp, atk, def, mdef, money, yellow, blue, red, 0);
-            var node = new Node(0, floor, x, y).setHero(hero);
-            list.Add(node);
+            hero = new Hero(hp, atk, def, mdef, money, yellow, blue, red, 0);
+            heroNode = new Node(0, floor, x, y).setHero(hero);
+
+            this.shouldMerge = shouldMerge;
+            this.shouldEat = shouldEat;
+        }
+
+        public void Build()
+        {
+            list.Add(heroNode);
 
             buildMap();
 
-            //if (shouldMerge)
-            //    mergeNode();
-            this.shouldEat = shouldEat;
+            if (shouldMerge)
+                mergeNode();
 
             // set id
             for (int i = 0; i < list.Count; i++)
@@ -179,6 +193,11 @@ namespace Gempoll
                 if (list[i].type == BOSS_INDEX)
                     bossId = i;
             }
+        }
+
+        private void mergeNode()
+        {
+
         }
 
         public void buildMap()
@@ -262,14 +281,27 @@ namespace Gempoll
             }
         }
 
+        /// <summary>
+        /// 判断两个节点是否连通
+        /// </summary>
+        /// <param name="f1">节点1的层</param>
+        /// <param name="x1">节点1的x坐标</param>
+        /// <param name="y1">节点1的y坐标</param>
+        /// <param name="f2">节点2的层</param>
+        /// <param name="x2">节点2的x坐标</param>
+        /// <param name="y2">节点2的y坐标</param>
+        /// <returns></returns>
         private bool isLinked(int f1, int x1, int y1, int f2, int x2, int y2)
         {
-            // 多层
+            // 不同层的的情况
+            // 总是令节点1高于节点2
             if (f1 < f2) return isLinked(f2, x2, y2, f1, x1, y1);
+            // 转化为节点1连通向下楼梯以及节点2连通向上楼梯
             if (f1 != f2)
                 return isLinked(f1, x1, y1, f1, stair[f1][2], stair[f1][3])
                     && isLinked(f1 - 1, stair[f1 - 1][0], stair[f1 - 1][1], f2, x2, y2);
 
+            // 同层的情况
             if (x1 == x2 && y1 == y2) return true;
 
             var visited = new bool[rowCount, columnCount];
