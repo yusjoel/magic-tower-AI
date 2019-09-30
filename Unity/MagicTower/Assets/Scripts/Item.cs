@@ -89,5 +89,20 @@ namespace Gempoll
             if (green > 0) builder.Append("green+").Append(green).Append(';');
             return builder.ToString();
         }
+
+        public void merge(Item another)
+        {
+            if (another == null) return;
+
+            hp += another.hp;
+            atk += another.atk;
+            def += another.def;
+            mdef += another.mdef;
+            yellow += another.yellow;
+            blue += another.blue;
+            red += another.red;
+            green += another.green;
+            special += another.special;
+        }
     }
 }

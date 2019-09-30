@@ -7,7 +7,7 @@ namespace Gempoll.Editor.Tests
 {
     public class GraphTest
     {
-        private string GetMap1Path()
+        private string GetMapPath(string fileName)
         {
             // in Visual Studio
             // <unity-project>\Temp\bin\Debug\
@@ -23,7 +23,7 @@ namespace Gempoll.Editor.Tests
 
             // 尽量不要使用UnityEngine下的方法, 如Application.streamingAssetsPath
             // 在VisualStudio中会报错: ECall 方法必须打包到系统模块中
-            string map1 = $"{basePath}/Assets/StreamingAssets/map1.txt";
+            string map1 = $"{basePath}/Assets/StreamingAssets/{fileName}";
             return map1;
         }
 
@@ -33,7 +33,7 @@ namespace Gempoll.Editor.Tests
         [Test]
         public void TestReadMap()
         {
-            string map1 = GetMap1Path();
+            string map1 = GetMapPath("map1.txt");
             using (var fileStream = File.OpenRead(map1))
             {
                 var scanner = new Scanner(fileStream);
@@ -60,13 +60,44 @@ namespace Gempoll.Editor.Tests
         ///     测试创建图(不合并节点)
         /// </summary>
         [Test]
-        public void TestBuildGraphNoMerge()
+        public void TestBuildGraphNoMerge1()
         {
-            string map1 = GetMap1Path();
-            using (var fileStream = File.OpenRead(map1))
+            BuildGraph("map1", false);
+        }
+
+        [Test]
+        public void TestBuildGraphNoMerge2()
+        {
+            BuildGraph("map2", false);
+        }
+
+        /// <summary>
+        ///     测试创建图(合并节点)
+        /// </summary>
+        [Test]
+        public void TestBuildGraph1()
+        {
+            BuildGraph("map1", true);
+        }
+
+        [Test]
+        public void TestBuildGraph2()
+        {
+            BuildGraph("map2", true);
+        }
+
+        /// <summary>
+        ///  创建图
+        /// </summary>
+        /// <param name="mapName"></param>
+        /// <param name="shouldMerge"></param>
+        private void BuildGraph(string mapName, bool shouldMerge)
+        {
+            string mapPath = GetMapPath($"{mapName}.txt");
+            using (var fileStream = File.OpenRead(mapPath))
             {
                 var scanner = new Scanner(fileStream);
-                var graph = new Graph(scanner, false, false);
+                var graph = new Graph(scanner, shouldMerge, false);
                 graph.Build();
 
                 int valid = 0;
@@ -82,8 +113,9 @@ namespace Gempoll.Editor.Tests
 
                 string result = stringBuilder.ToString();
 
-                string nodesFile = map1.Replace(".txt", "-nodes-no-merge.txt");
-                string expected = File.ReadAllText(nodesFile);
+                string postfix = shouldMerge ? "" : "-no-merge";
+                string nodesPath = GetMapPath($"{mapName}-nodes{postfix}.txt");
+                string expected = File.ReadAllText(nodesPath);
 
                 Assert.AreEqual(expected, result);
             }

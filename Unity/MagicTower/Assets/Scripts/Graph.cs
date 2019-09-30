@@ -62,8 +62,10 @@ namespace Gempoll
         /// </summary>
         public readonly int floorCount;
 
+        private readonly Hero hero;
+
         /// <summary>
-        /// 节点列表
+        ///     节点列表
         /// </summary>
         public readonly List<Node> list;
 
@@ -97,6 +99,8 @@ namespace Gempoll
         /// </summary>
         public readonly int rowCount;
 
+        private readonly bool shouldMerge;
+
         /// <summary>
         ///     楼梯
         ///     <para>默认每个层最多只有一个向上楼梯和一个向下楼梯</para>
@@ -107,15 +111,11 @@ namespace Gempoll
 
         private int bossId = -1;
 
-        private readonly Hero hero;
-
         public Node heroNode;
 
         private Shop shop;
 
         private bool shouldEat;
-
-        private readonly bool shouldMerge;
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
@@ -200,6 +200,64 @@ namespace Gempoll
 
         private void mergeNode()
         {
+            for (int i = 1; i < list.Count; i++)
+            {
+                var n1 = list[i];
+                for (int j = i + 1; j < list.Count; j++)
+                {
+                    var n2 = list[j];
+                    if (ShouldMerge(n1, n2))
+                    {
+                        n1.merge(n2);
+                        list.RemoveAt(j);
+                        mergeNode();
+                        return;
+                    }
+                }
+            }
+        }
+
+        private bool ShouldMerge(Node n1, Node n2)
+        {
+            // 说明参考下面内的文章
+            // https://ckcz123.com/blog/posts/magic-tower-ai-ii/
+
+            // 1. 如果这两个节点不相连，则不合并。
+            if (!n1.linked.Contains(n2) || !n2.linked.Contains(n1)) return false;
+
+            // 2. 如果这两个节点都是宝物节点，则直接合并。
+            if (n1.item != null && n2.item != null) return true;
+
+            // 3. 如果一个是宝物节点，另一个是消耗节点，则不合并。
+            if (n1.item != null || n2.item != null) return false;
+
+            // 任意一个是Boss节点, 不能合并
+            if (n1.type == BOSS_INDEX || n2.type == BOSS_INDEX) return false;
+
+            // 4. 如果都是消耗节点，且存在第三个节点同时和这两个节点相连，则不合并
+            foreach (var node in n2.linked)
+                if (n1.linked.Contains(node))
+                    return false;
+
+            // 5. 如果都是消耗节点，且其中某个节点相连的其他所有节点，不是两两相连，则不合并。
+            // 4.5.都是为了防止从任意节点打开了n1, n2中任一节点, 出现新的选项
+            // TODO:这里可以优化, 应该考虑英雄的位置
+            if (!Check(n1, n2)) return false;
+            if (!Check(n2, n1)) return false;
+
+            return true;
+        }
+
+        private bool Check(Node u, Node v)
+        {
+            foreach (var x in u.linked)
+            foreach (var y in u.linked)
+            {
+                if (x == y || x == v || y == v) continue;
+
+                if (!x.linked.Contains(y) || !y.linked.Contains(x)) return false;
+            }
+            return true;
         }
 
         private void buildMap()

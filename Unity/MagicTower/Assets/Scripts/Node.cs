@@ -13,7 +13,7 @@ namespace Gempoll
         /// <summary>
         ///     邻接表记录所有相邻节点
         /// </summary>
-        private readonly HashSet<Node> linked;
+        public readonly HashSet<Node> linked;
 
         /// <summary>
         ///     包含的怪物列表
@@ -32,7 +32,10 @@ namespace Gempoll
         /// </summary>
         private int id;
 
-        private Item item;
+        /// <summary>
+        ///     包含的道具
+        /// </summary>
+        public Item item;
 
         /// <summary>
         ///     节点的类型
@@ -101,22 +104,10 @@ namespace Gempoll
             var builder = new StringBuilder();
             if (id != 0) builder.Append("Id=").Append(id).Append(": ");
             builder.Append($"({f},{x},{y})");
-            if (hero != null)
-            {
-                builder.Append(" -- Hero: ").Append(hero.ToString());
-            }
-            if (item != null)
-            {
-                builder.Append(" -- Items: ").Append(item.ToString());
-            }
-            if (doors.Count > 0)
-            {
-                builder.Append(" -- Doors: ").Append(Serialize(doors));
-            }
-            if (monsters.Count > 0)
-            {
-                builder.Append(" -- Monsters: ").Append(Serialize(monsters));
-            }
+            if (hero != null) builder.Append(" -- Hero: ").Append(hero);
+            if (item != null) builder.Append(" -- Items: ").Append(item);
+            if (doors.Count > 0) builder.Append(" -- Doors: ").Append(Serialize(doors));
+            if (monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Serialize(monsters));
             builder.Append(" -- ").Append(linked.Count).Append(" Linked");
             return builder.ToString();
         }
@@ -134,6 +125,28 @@ namespace Gempoll
             }
             stringBuilder.Append("]");
             return stringBuilder.ToString();
+        }
+
+        public void merge(Node another)
+        {
+            // merge items...
+            if (item != null) item.merge(another.item);
+
+            // merge doors...
+            doors.AddRange(another.doors);
+            // merge monsters...
+            monsters.AddRange(another.monsters);
+
+            // merge nodes
+            foreach (var to in another.linked)
+            {
+                if (to != this)
+                {
+                    linked.Add(to);
+                    to.addNode(this);
+                }
+                to.linked.Remove(another);
+            }
         }
     }
 }
