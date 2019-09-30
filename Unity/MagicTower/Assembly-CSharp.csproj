@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\Scanner.cs" />
     <Compile Include="Assets\Scripts\Shop.cs" />
     <None Include="Assets\StreamingAssets\map1.txt" />
+    <None Include="Assets\StreamingAssets\map1-nodes-no-merge.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Github/magic-tower-AI/Unity/MagicTower/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>

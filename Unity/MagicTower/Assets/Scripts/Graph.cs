@@ -62,7 +62,10 @@ namespace Gempoll
         /// </summary>
         public readonly int floorCount;
 
-        private readonly List<Node> list;
+        /// <summary>
+        /// 节点列表
+        /// </summary>
+        public readonly List<Node> list;
 
         /// <summary>
         ///     地图
@@ -104,15 +107,15 @@ namespace Gempoll
 
         private int bossId = -1;
 
+        private readonly Hero hero;
+
+        public Node heroNode;
+
         private Shop shop;
 
         private bool shouldEat;
 
-        private bool shouldMerge;
-
-        private Hero hero;
-
-        public Node heroNode;
+        private readonly bool shouldMerge;
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
@@ -197,10 +200,9 @@ namespace Gempoll
 
         private void mergeNode()
         {
-
         }
 
-        public void buildMap()
+        private void buildMap()
         {
             for (int i = 0; i < floorCount; i++)
             for (int j = 0; j < rowCount; j++)
@@ -282,7 +284,7 @@ namespace Gempoll
         }
 
         /// <summary>
-        /// 判断两个节点是否连通
+        ///     判断两个节点是否连通
         /// </summary>
         /// <param name="f1">节点1的层</param>
         /// <param name="x1">节点1的x坐标</param>
@@ -296,6 +298,7 @@ namespace Gempoll
             // 不同层的的情况
             // 总是令节点1高于节点2
             if (f1 < f2) return isLinked(f2, x2, y2, f1, x1, y1);
+
             // 转化为节点1连通向下楼梯以及节点2连通向上楼梯
             if (f1 != f2)
                 return isLinked(f1, x1, y1, f1, stair[f1][2], stair[f1][3])

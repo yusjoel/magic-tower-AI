@@ -10,9 +10,9 @@
         private int yellow;
         private int blue;
         private int red;
-        private int v;
+        private int green;
 
-        public Hero(int hp, int atk, int def, int mdef, int money, int yellow, int blue, int red, int v)
+        public Hero(int hp, int atk, int def, int mdef, int money, int yellow, int blue, int red, int green)
         {
             this.hp = hp;
             this.atk = atk;
@@ -22,7 +22,12 @@
             this.yellow = yellow;
             this.blue = blue;
             this.red = red;
-            this.v = v;
+            this.green = green;
+        }
+
+        public override string ToString()
+        {
+            return $"({hp},{atk},{def},{mdef},{money},{yellow},{blue},{red},{green})";
         }
     }
 }

@@ -2,21 +2,31 @@
 {
     public class Monster
     {
-        private int id;
-        private int v1;
-        private int v2;
-        private int v3;
-        private int v4;
-        private int v5;
+        private readonly int atk;
 
-        public Monster(int id, int v1, int v2, int v3, int v4, int v5)
+        private readonly int def;
+
+        private readonly int hp;
+
+        private readonly int id;
+
+        private readonly int money;
+
+        private readonly int special;
+
+        public Monster(int id, int hp, int atk, int def, int money, int special)
         {
             this.id = id;
-            this.v1 = v1;
-            this.v2 = v2;
-            this.v3 = v3;
-            this.v4 = v4;
-            this.v5 = v5;
+            this.hp = hp;
+            this.atk = atk;
+            this.def = def;
+            this.money = money;
+            this.special = special;
+        }
+
+        public override string ToString()
+        {
+            return $"({id},{hp},{atk},{def},{money},{special})";
         }
     }
 }

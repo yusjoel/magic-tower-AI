@@ -1,10 +1,24 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Gempoll
 {
     public class Node
     {
-        private readonly List<int> doors;
+        /// <summary>
+        ///     包含的门列表
+        /// </summary>
+        public readonly List<int> doors;
+
+        /// <summary>
+        ///     邻接表记录所有相邻节点
+        /// </summary>
+        private readonly HashSet<Node> linked;
+
+        /// <summary>
+        ///     包含的怪物列表
+        /// </summary>
+        public readonly List<Monster> monsters;
 
         /// <summary>
         ///     楼层
@@ -19,13 +33,6 @@ namespace Gempoll
         private int id;
 
         private Item item;
-
-        /// <summary>
-        ///     邻接表记录所有相邻节点
-        /// </summary>
-        private HashSet<Node> linked;
-
-        private readonly List<Monster> monsters;
 
         /// <summary>
         ///     节点的类型
@@ -87,6 +94,46 @@ namespace Gempoll
         public void addNode(Node another)
         {
             linked.Add(another);
+        }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            if (id != 0) builder.Append("Id=").Append(id).Append(": ");
+            builder.Append($"({f},{x},{y})");
+            if (hero != null)
+            {
+                builder.Append(" -- Hero: ").Append(hero.ToString());
+            }
+            if (item != null)
+            {
+                builder.Append(" -- Items: ").Append(item.ToString());
+            }
+            if (doors.Count > 0)
+            {
+                builder.Append(" -- Doors: ").Append(Serialize(doors));
+            }
+            if (monsters.Count > 0)
+            {
+                builder.Append(" -- Monsters: ").Append(Serialize(monsters));
+            }
+            builder.Append(" -- ").Append(linked.Count).Append(" Linked");
+            return builder.ToString();
+        }
+
+        private string Serialize<T>(List<T> list)
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append("[");
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+                stringBuilder.Append(item);
+                if (i < list.Count - 1)
+                    stringBuilder.Append(", ");
+            }
+            stringBuilder.Append("]");
+            return stringBuilder.ToString();
         }
     }
 }
