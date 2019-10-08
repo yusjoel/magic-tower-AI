@@ -2,17 +2,17 @@
 {
     public class Monster
     {
-        private readonly int atk;
+        public readonly int atk;
 
-        private readonly int def;
+        public readonly int def;
 
-        private readonly int hp;
+        public readonly int hp;
 
-        private readonly int id;
+        public readonly int id;
 
-        private readonly int money;
+        public readonly int money;
 
-        private readonly int special;
+        public readonly int special;
 
         public Monster(int id, int hp, int atk, int def, int money, int special)
         {

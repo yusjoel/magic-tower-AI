@@ -2,21 +2,51 @@
 {
     public class Shop
     {
-        private int v1;
-        private int v2;
-        private int v3;
-        private int v4;
-        private int v5;
-        private int v6;
+        private readonly int atk;
 
-        public Shop(int v1, int v2, int v3, int v4, int v5, int v6)
+        private int def;
+
+        private readonly int delta;
+
+        private int hp;
+
+        private int mdef;
+
+        private readonly int start;
+
+        public Shop(int start, int delta, int hp, int atk, int def, int mdef)
         {
-            this.v1 = v1;
-            this.v2 = v2;
-            this.v3 = v3;
-            this.v4 = v4;
-            this.v5 = v5;
-            this.v6 = v6;
+            this.start = start;
+            this.delta = delta;
+            this.hp = hp;
+            this.atk = atk;
+            this.def = def;
+            this.mdef = mdef;
+        }
+
+        public int moneyNeeded(int visitTime)
+        {
+            return start + delta * visitTime;
+        }
+
+        public bool useShop(Hero hero, int visitTime)
+        {
+            if (visitTime < 0) return false;
+            if (hero.money < moneyNeeded(visitTime)) return false;
+
+            /**
+             * Algorithm to choose HP/ATK/DEF/MDEF
+             */
+
+            // Add atk
+            hero.money -= moneyNeeded(visitTime);
+            hero.atk += getAtkPoint();
+            return true;
+        }
+
+        public int getAtkPoint()
+        {
+            return atk;
         }
     }
 }

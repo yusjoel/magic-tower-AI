@@ -2,15 +2,23 @@
 {
     public class Hero
     {
-        private int hp;
-        private int atk;
-        private int def;
-        private int mdef;
-        private int money;
-        private int yellow;
-        private int blue;
-        private int red;
-        private int green;
+        public int atk;
+
+        public int blue;
+
+        public int def;
+
+        public int green;
+
+        public int hp;
+
+        public int mdef;
+
+        public int money;
+
+        public int red;
+
+        public int yellow;
 
         public Hero(int hp, int atk, int def, int mdef, int money, int yellow, int blue, int red, int green)
         {
@@ -25,9 +33,39 @@
             this.green = green;
         }
 
+        public Hero(Hero another) : this(another.hp, another.atk, another.def, another.mdef, another.money,
+            another.yellow, another.blue, another.red, another.green)
+        {
+        }
+
+        public void getItem(Item item)
+        {
+            if (item == null) return;
+
+            hp += item.hp;
+            atk += item.atk;
+            def += item.def;
+            mdef += item.mdef;
+            yellow += item.yellow;
+            blue += item.blue;
+            red += item.red;
+            green += item.green;
+        }
+
+        public bool isValid()
+        {
+            return hp > 0 && yellow >= 0 && blue >= 0 && red >= 0 && green >= 0;
+        }
+
         public override string ToString()
         {
             return $"({hp},{atk},{def},{mdef},{money},{yellow},{blue},{red},{green})";
+        }
+
+        public int getScore()
+        {
+            // return hp+1000*(atk+def)+60*mdef+200*yellow+450*blue;
+            return hp;
         }
     }
 }

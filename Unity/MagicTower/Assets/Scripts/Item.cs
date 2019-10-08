@@ -4,23 +4,23 @@ namespace Gempoll
 {
     public class Item
     {
-        private int atk;
+        public int atk;
 
-        private int blue;
+        public int blue;
 
-        private int def;
+        public int def;
 
-        private int green;
+        public int green;
 
-        private int hp;
+        public int hp;
 
-        private int mdef;
+        public int mdef;
 
-        private int red;
+        public int red;
 
-        private int special;
+        public int special;
 
-        private int yellow;
+        public int yellow;
 
         public Item setHp(int hp)
         {

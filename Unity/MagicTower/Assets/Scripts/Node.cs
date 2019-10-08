@@ -11,11 +11,6 @@ namespace Gempoll
         public readonly List<int> doors;
 
         /// <summary>
-        ///     邻接表记录所有相邻节点
-        /// </summary>
-        public readonly HashSet<Node> linked;
-
-        /// <summary>
         ///     包含的怪物列表
         /// </summary>
         public readonly List<Monster> monsters;
@@ -25,17 +20,22 @@ namespace Gempoll
         /// </summary>
         public int f;
 
-        private Hero hero;
+        public Hero hero;
 
         /// <summary>
         ///     节点的ID
         /// </summary>
-        private int id;
+        public int id;
 
         /// <summary>
         ///     包含的道具
         /// </summary>
         public Item item;
+
+        /// <summary>
+        ///     邻接表记录所有相邻节点
+        /// </summary>
+        public HashSet<Node> linked;
 
         /// <summary>
         ///     节点的类型
@@ -147,6 +147,58 @@ namespace Gempoll
                 }
                 to.linked.Remove(another);
             }
+        }
+
+        public Node merge(Node another, bool[] visited)
+        {
+            var node = new Node(type, another.f, another.x, another.y).setHero(new Hero(hero));
+            node.linked = new HashSet<Node>(linked);
+
+            // get item
+            if (another.item != null)
+                node.hero.getItem(another.item);
+
+            // open doors...
+            foreach (int v in another.doors)
+            {
+                if (v == 1) node.hero.yellow--;
+                if (v == 2) node.hero.blue--;
+                if (v == 3) node.hero.red--;
+            }
+
+            // beat monsters...
+            foreach (var monster in another.monsters) node.hero.hp -= Util.getDamage(node.hero, monster);
+
+            if (!node.hero.isValid())
+                return null;
+
+            // merge linked nodes
+            foreach (var to in another.linked)
+                if (!visited[to.id])
+                    node.addNode(to);
+
+            return node;
+        }
+
+        public bool shouldEat(Hero hero)
+        {
+            if (item != null) return true;
+            if (hero == null) return false;
+
+            // 无伤怪物直接干掉
+            if (doors.Count > 0) return false;
+            if (monsters.Count == 0) return false;
+
+            foreach (var monster in monsters)
+                if (Util.getDamage(hero, monster) != 0)
+                    return false;
+
+            return true;
+        }
+
+        public int getScore()
+        {
+            return hero == null ? 0 : hero.getScore();
         }
     }
 }

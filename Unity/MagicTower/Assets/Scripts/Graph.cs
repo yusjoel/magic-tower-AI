@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Medallion.Collections;
+using System;
+using System.Collections.Generic;
 
 namespace Gempoll
 {
@@ -109,13 +111,13 @@ namespace Gempoll
         /// </summary>
         private readonly int[][] stair;
 
-        private int bossId = -1;
+        public int bossId = -1;
 
         public Node heroNode;
 
-        private Shop shop;
+        public Shop shop;
 
-        private bool shouldEat;
+        public bool shouldEat;
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
@@ -223,16 +225,20 @@ namespace Gempoll
             // https://ckcz123.com/blog/posts/magic-tower-ai-ii/
 
             // 1. 如果这两个节点不相连，则不合并。
-            if (!n1.linked.Contains(n2) || !n2.linked.Contains(n1)) return false;
+            if (!n1.linked.Contains(n2) || !n2.linked.Contains(n1))
+                return false;
 
             // 2. 如果这两个节点都是宝物节点，则直接合并。
-            if (n1.item != null && n2.item != null) return true;
+            if (n1.item != null && n2.item != null)
+                return true;
 
             // 3. 如果一个是宝物节点，另一个是消耗节点，则不合并。
-            if (n1.item != null || n2.item != null) return false;
+            if (n1.item != null || n2.item != null)
+                return false;
 
             // 任意一个是Boss节点, 不能合并
-            if (n1.type == BOSS_INDEX || n2.type == BOSS_INDEX) return false;
+            if (n1.type == BOSS_INDEX || n2.type == BOSS_INDEX)
+                return false;
 
             // 4. 如果都是消耗节点，且存在第三个节点同时和这两个节点相连，则不合并
             foreach (var node in n2.linked)
@@ -242,8 +248,11 @@ namespace Gempoll
             // 5. 如果都是消耗节点，且其中某个节点相连的其他所有节点，不是两两相连，则不合并。
             // 4.5.都是为了防止从任意节点打开了n1, n2中任一节点, 出现新的选项
             // TODO:这里可以优化, 应该考虑英雄的位置
-            if (!Check(n1, n2)) return false;
-            if (!Check(n2, n1)) return false;
+            if (!Check(n1, n2))
+                return false;
+
+            if (!Check(n2, n1))
+                return false;
 
             return true;
         }
@@ -394,6 +403,98 @@ namespace Gempoll
             }
 
             return false;
+        }
+
+        public void run()
+        {
+            var state = new State(this, list[0]);
+            State answer = null;
+
+            int index = 0, solutions = 0;
+
+            var set = new HashSet<long>();
+            var map = new Dictionary<long, int>();
+
+            // !!! start bfs !!!!!
+
+            long start = DateTime.Now.Millisecond;
+
+            var queue = new PriorityQueue<State>(State.GetComparer());
+
+            queue.Enqueue(state);
+
+            while (queue.Count > 0)
+            {
+                state = queue.Dequeue();
+
+                if (!set.Add(state.hash())) continue;
+
+                if (state.shouldStop())
+                {
+                    if (answer == null || answer.getScore() < state.getScore())
+                        answer = state;
+                    solutions++;
+                    continue;
+
+                    //break;
+                }
+
+                // extend
+                foreach (var node in state.current.linked)
+                {
+                    // visited
+                    if (state.visited[node.id]) continue;
+
+                    /*
+                    // should extend?
+                    boolean shouldExtend=false;
+                    for (Node x: node.linked) {
+                        if (!x.equals(state.current) && !state.current.linked.contains(x)) {
+                            shouldExtend=true;
+                            break;
+                        }
+                    }
+                    if (!shouldExtend) {
+                        continue;
+                    }
+                    */
+
+                    // extend
+                    var another = new State(state).merge(node);
+                    if (another == null) continue;
+
+                    long hash = another.hash();
+                    int score = -1;
+                    map.TryGetValue(hash, out score);
+                    if (score > another.getScore()) continue;
+
+                    map[hash] = another.getScore();
+                    queue.Enqueue(another);
+                }
+
+                index++;
+                if (index % 1000 == 0)
+                {
+                    //System.out.println(String.format("Calculating... %d calculated, %d still in queue.", index, queue.size()));
+                }
+            }
+            //System.out.println("cnt: "+index+"; solutions: "+solutions);
+
+            if (answer == null)
+            {
+                //System.out.println("No solution!");
+            }
+            else
+            {
+                foreach (string s in answer.route)
+                {
+                    //System.out.println(s);
+                }
+            }
+
+            //long end = System.currentTimeMillis();
+
+            //System.out.println(String.format("Time used: %.3fs", (end-start)/1000.0));
         }
     }
 }
