@@ -405,7 +405,7 @@ namespace Gempoll
             return false;
         }
 
-        public void run()
+        public State run()
         {
             var state = new State(this, list[0]);
             State answer = null;
@@ -417,7 +417,7 @@ namespace Gempoll
 
             // !!! start bfs !!!!!
 
-            long start = DateTime.Now.Millisecond;
+            int start = DateTime.Now.Millisecond;
 
             var queue = new PriorityQueue<State>(State.GetComparer());
 
@@ -427,6 +427,8 @@ namespace Gempoll
             {
                 state = queue.Dequeue();
 
+                Console.WriteLine("poll: " + state.current);
+
                 if (!set.Add(state.hash())) continue;
 
                 if (state.shouldStop())
@@ -435,8 +437,6 @@ namespace Gempoll
                         answer = state;
                     solutions++;
                     continue;
-
-                    //break;
                 }
 
                 // extend
@@ -445,27 +445,14 @@ namespace Gempoll
                     // visited
                     if (state.visited[node.id]) continue;
 
-                    /*
-                    // should extend?
-                    boolean shouldExtend=false;
-                    for (Node x: node.linked) {
-                        if (!x.equals(state.current) && !state.current.linked.contains(x)) {
-                            shouldExtend=true;
-                            break;
-                        }
-                    }
-                    if (!shouldExtend) {
-                        continue;
-                    }
-                    */
-
                     // extend
                     var another = new State(state).merge(node);
                     if (another == null) continue;
 
                     long hash = another.hash();
-                    int score = -1;
-                    map.TryGetValue(hash, out score);
+                    int score;
+                    if (!map.TryGetValue(hash, out score))
+                        score = -1;
                     if (score > another.getScore()) continue;
 
                     map[hash] = another.getScore();
@@ -475,26 +462,28 @@ namespace Gempoll
                 index++;
                 if (index % 1000 == 0)
                 {
-                    //System.out.println(String.format("Calculating... %d calculated, %d still in queue.", index, queue.size()));
+                    break;
+                    Console.WriteLine("Calculating... {0} calculated, {1} still in queue.", index, queue.Count);
                 }
             }
-            //System.out.println("cnt: "+index+"; solutions: "+solutions);
+            Console.WriteLine("cnt: " + index + "; solutions: " + solutions);
 
-            if (answer == null)
-            {
-                //System.out.println("No solution!");
-            }
-            else
-            {
-                foreach (string s in answer.route)
-                {
-                    //System.out.println(s);
-                }
-            }
+            //if (answer == null)
+            //{
+            //    Console.WriteLine("No solution!");
+            //}
+            //else
+            //{
+            //    foreach (string s in answer.route)
+            //    {
+            //        Console.WriteLine(s);
+            //    }
+            //}
 
-            //long end = System.currentTimeMillis();
+            int end = DateTime.Now.Millisecond;
+            Console.WriteLine("Time used: {0:f3}s", (end - start) / 1000f);
 
-            //System.out.println(String.format("Time used: %.3fs", (end-start)/1000.0));
+            return answer;
         }
     }
 }

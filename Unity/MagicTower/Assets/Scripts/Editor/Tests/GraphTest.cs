@@ -86,6 +86,54 @@ namespace Gempoll.Editor.Tests
             BuildGraph("map2", true);
         }
 
+        [Test]
+        public void TestRunGraph1()
+        {
+            RunGraph("map1");
+        }
+
+        [Test]
+        public void TestRunGraph2()
+        {
+            RunGraph("map2");
+        }
+
+        /// <summary>
+        ///  求解图
+        /// </summary>
+        /// <param name="mapName"></param>
+        private void RunGraph(string mapName)
+        {
+            string mapPath = GetMapPath($"{mapName}.txt");
+            using (var fileStream = File.OpenRead(mapPath))
+            {
+                var scanner = new Scanner(fileStream);
+                var graph = new Graph(scanner, true, true);
+                graph.Build();
+                var answer = graph.run();
+
+                var stringBuilder = new StringBuilder();
+
+                if (answer == null)
+                {
+                    stringBuilder.AppendLine("No solution!");
+                }
+                else
+                {
+                    foreach (string s in answer.route)
+                    {
+                        stringBuilder.AppendLine(s);
+                    }
+                }
+
+                string result = stringBuilder.ToString();
+                string answerPath = GetMapPath($"{mapName}-answer.txt");
+                string expected = File.ReadAllText(answerPath);
+
+                Assert.AreEqual(expected, result);
+            }
+        }
+
         /// <summary>
         ///  创建图
         /// </summary>
