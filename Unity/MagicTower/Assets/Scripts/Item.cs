@@ -22,33 +22,24 @@ namespace Gempoll
 
         public int yellow;
 
-        public Item setHp(int hp)
+        public void merge(Item another)
         {
-            this.hp = hp;
-            return this;
+            if (another == null) return;
+
+            hp += another.hp;
+            atk += another.atk;
+            def += another.def;
+            mdef += another.mdef;
+            yellow += another.yellow;
+            blue += another.blue;
+            red += another.red;
+            green += another.green;
+            special += another.special;
         }
 
         public Item setAtk(int atk)
         {
             this.atk = atk;
-            return this;
-        }
-
-        public Item setDef(int def)
-        {
-            this.def = def;
-            return this;
-        }
-
-        public Item setMdef(int mdef)
-        {
-            this.mdef = mdef;
-            return this;
-        }
-
-        public Item setYellow(int yellow)
-        {
-            this.yellow = yellow;
             return this;
         }
 
@@ -58,9 +49,9 @@ namespace Gempoll
             return this;
         }
 
-        public Item setRed(int red)
+        public Item setDef(int def)
         {
-            this.red = red;
+            this.def = def;
             return this;
         }
 
@@ -70,9 +61,33 @@ namespace Gempoll
             return this;
         }
 
+        public Item setHp(int hp)
+        {
+            this.hp = hp;
+            return this;
+        }
+
+        public Item setMdef(int mdef)
+        {
+            this.mdef = mdef;
+            return this;
+        }
+
+        public Item setRed(int red)
+        {
+            this.red = red;
+            return this;
+        }
+
         public Item setSpecial(int special)
         {
             this.special = special;
+            return this;
+        }
+
+        public Item setYellow(int yellow)
+        {
+            this.yellow = yellow;
             return this;
         }
 
@@ -88,21 +103,6 @@ namespace Gempoll
             if (red > 0) builder.Append("red+").Append(red).Append(';');
             if (green > 0) builder.Append("green+").Append(green).Append(';');
             return builder.ToString();
-        }
-
-        public void merge(Item another)
-        {
-            if (another == null) return;
-
-            hp += another.hp;
-            atk += another.atk;
-            def += another.def;
-            mdef += another.mdef;
-            yellow += another.yellow;
-            blue += another.blue;
-            red += another.red;
-            green += another.green;
-            special += another.special;
         }
     }
 }

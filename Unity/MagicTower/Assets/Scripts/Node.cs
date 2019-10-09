@@ -72,68 +72,19 @@ namespace Gempoll
             linked = new LinkedHashSet<Node>();
         }
 
-        public void setId(int id)
-        {
-            this.id = id;
-        }
-
-        public Node setHero(Hero hero)
-        {
-            this.hero = hero;
-            return this;
-        }
-
-        public Node setItem(Item item)
-        {
-            this.item = item;
-            return this;
-        }
-
-        public Node setDoor(int door)
-        {
-            doors.Add(door);
-            return this;
-        }
-
-        public Node setMonster(Monster monster)
-        {
-            monsters.Add(monster);
-            return this;
-        }
-
         public void addNode(Node another)
         {
             linked.Add(another);
         }
 
-        public override string ToString()
+        public override int GetHashCode()
         {
-            var builder = new StringBuilder();
-            if (id != 0) builder.Append("Id=").Append(id).Append(": ");
-            builder.Append($"({f},{x},{y})");
-            if (hero != null) builder.Append(" -- Hero: ").Append(hero);
-            if (item != null) builder.Append(" -- Items: ").Append(item);
-            if (doors.Count > 0) builder.Append(" -- Doors: ").Append(Serialize(doors));
-            if (monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Serialize(monsters));
-            builder.Append(" -- ").Append(linked.Count).Append(" Linked ");
-            foreach (var node in linked)
-                builder.Append(node.id).Append(",");
-            return builder.ToString();
+            return 1000000 * f + 1000 * x + y;
         }
 
-        private string Serialize<T>(List<T> list)
+        public int getScore()
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append("[");
-            for (int i = 0; i < list.Count; i++)
-            {
-                var item = list[i];
-                stringBuilder.Append(item);
-                if (i < list.Count - 1)
-                    stringBuilder.Append(", ");
-            }
-            stringBuilder.Append("]");
-            return stringBuilder.ToString();
+            return hero == null ? 0 : hero.getScore();
         }
 
         public void merge(Node another)
@@ -189,6 +140,50 @@ namespace Gempoll
             return node;
         }
 
+        private string Serialize<T>(List<T> list)
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append("[");
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+                stringBuilder.Append(item);
+                if (i < list.Count - 1)
+                    stringBuilder.Append(", ");
+            }
+            stringBuilder.Append("]");
+            return stringBuilder.ToString();
+        }
+
+        public Node setDoor(int door)
+        {
+            doors.Add(door);
+            return this;
+        }
+
+        public Node setHero(Hero hero)
+        {
+            this.hero = hero;
+            return this;
+        }
+
+        public void setId(int id)
+        {
+            this.id = id;
+        }
+
+        public Node setItem(Item item)
+        {
+            this.item = item;
+            return this;
+        }
+
+        public Node setMonster(Monster monster)
+        {
+            monsters.Add(monster);
+            return this;
+        }
+
         public bool shouldEat(Hero hero)
         {
             if (item != null) return true;
@@ -205,14 +200,19 @@ namespace Gempoll
             return true;
         }
 
-        public int getScore()
+        public override string ToString()
         {
-            return hero == null ? 0 : hero.getScore();
-        }
-
-        public override int GetHashCode()
-        {
-            return 1000000 * f + 1000 * x + y;
+            var builder = new StringBuilder();
+            if (id != 0) builder.Append("Id=").Append(id).Append(": ");
+            builder.Append($"({f},{x},{y})");
+            if (hero != null) builder.Append(" -- Hero: ").Append(hero);
+            if (item != null) builder.Append(" -- Items: ").Append(item);
+            if (doors.Count > 0) builder.Append(" -- Doors: ").Append(Serialize(doors));
+            if (monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Serialize(monsters));
+            builder.Append(" -- ").Append(linked.Count).Append(" Linked ");
+            foreach (var node in linked)
+                builder.Append(node.id).Append(",");
+            return builder.ToString();
         }
     }
 }

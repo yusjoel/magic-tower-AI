@@ -4,15 +4,15 @@
     {
         private readonly int atk;
 
-        private int def;
-
         private readonly int delta;
+
+        private readonly int start;
+
+        private int def;
 
         private int hp;
 
         private int mdef;
-
-        private readonly int start;
 
         public Shop(int start, int delta, int hp, int atk, int def, int mdef)
         {
@@ -22,6 +22,11 @@
             this.atk = atk;
             this.def = def;
             this.mdef = mdef;
+        }
+
+        public int getAtkPoint()
+        {
+            return atk;
         }
 
         public int moneyNeeded(int visitTime)
@@ -42,11 +47,6 @@
             hero.money -= moneyNeeded(visitTime);
             hero.atk += getAtkPoint();
             return true;
-        }
-
-        public int getAtkPoint()
-        {
-            return atk;
         }
     }
 }

@@ -15,9 +15,9 @@ namespace Gempoll
 
         public int cnt;
 
-        public int Id;
-
         public Node current;
+
+        public int Id;
 
         private int shopTime;
 
@@ -44,27 +44,6 @@ namespace Gempoll
             route = new List<string>(another.route);
             shopTime = another.shopTime;
             cnt = another.cnt;
-        }
-
-        public static Comparer GetComparer()
-        {
-            return comparer;
-        }
-
-        public State merge(Node node)
-        {
-            if (visited[node.id] || !current.linked.Contains(node))
-                return null;
-
-            var another = current.merge(node, visited);
-            if (another == null) return null;
-
-            current = another;
-            visit(node);
-            route.Add(current.ToString());
-            eatItem();
-            cnt++;
-            return this;
         }
 
         /// <summary>
@@ -94,14 +73,14 @@ namespace Gempoll
                 shopTime++;
         }
 
-        public void visit(Node node)
+        public static Comparer GetComparer()
         {
-            if (!visited[node.id] && current.linked.Remove(node))
-            {
-                foreach (var monster in node.monsters)
-                    current.hero.money += monster.money;
-                visited[node.id] = true;
-            }
+            return comparer;
+        }
+
+        public int getScore()
+        {
+            return current.getScore();
         }
 
         public long hash()
@@ -118,6 +97,22 @@ namespace Gempoll
             return val;
         }
 
+        public State merge(Node node)
+        {
+            if (visited[node.id] || !current.linked.Contains(node))
+                return null;
+
+            var another = current.merge(node, visited);
+            if (another == null) return null;
+
+            current = another;
+            visit(node);
+            route.Add(current.ToString());
+            eatItem();
+            cnt++;
+            return this;
+        }
+
         public bool shouldStop()
         {
             if (cnt > STOP_COUNT) return true;
@@ -128,22 +123,28 @@ namespace Gempoll
             return false;
         }
 
-        public int getScore()
+        public void visit(Node node)
         {
-            return current.getScore();
+            if (!visited[node.id] && current.linked.Remove(node))
+            {
+                foreach (var monster in node.monsters)
+                    current.hero.money += monster.money;
+                visited[node.id] = true;
+            }
         }
 
         public class Comparer : IComparer<State>
         {
             public int Compare(State o1, State o2)
             {
-                if(o1 == null)
+                if (o1 == null)
                     throw new ArgumentNullException(nameof(o1));
 
                 if (o2 == null)
                     throw new ArgumentNullException(nameof(o2));
 
                 if (o1.cnt == o2.cnt) return o2.getScore() - o1.getScore();
+
                 return o1.cnt - o2.cnt;
             }
         }

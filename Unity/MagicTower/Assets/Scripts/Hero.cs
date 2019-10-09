@@ -52,6 +52,11 @@
             green += item.green;
         }
 
+        public int getScore()
+        {
+            return hp;
+        }
+
         public bool isValid()
         {
             return hp > 0 && yellow >= 0 && blue >= 0 && red >= 0 && green >= 0;
@@ -60,12 +65,6 @@
         public override string ToString()
         {
             return $"({hp},{atk},{def},{mdef},{money},{yellow},{blue},{red},{green})";
-        }
-
-        public int getScore()
-        {
-            // return hp+1000*(atk+def)+60*mdef+200*yellow+450*blue;
-            return hp;
         }
     }
 }
