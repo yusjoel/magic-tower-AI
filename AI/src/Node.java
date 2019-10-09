@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * Created by ckcz123 on 2017/10/12.
@@ -16,14 +17,14 @@ public class Node {
     ArrayList<Integer> doors;
     ArrayList<Monster> monsters;
     // 邻接表记录所有相邻节点
-    HashSet<Node> linked;
+    LinkedHashSet<Node> linked;
 
     public Node(int _type, int _f, int _x, int _y) {
         type=_type; f=_f; x=_x; y=_y;
         hero=null; item=null;
         monsters=new ArrayList<>();
         doors=new ArrayList<>();
-        linked=new HashSet<>();
+        linked=new LinkedHashSet<>();
     }
 
     public Node setHero(Hero _hero) {
@@ -82,7 +83,7 @@ public class Node {
 
     public Node merge(Node another, boolean[] visited) {
         Node node = new Node(type, another.f, another.x, another.y).setHero(new Hero(hero));
-        node.linked = new HashSet<>(linked);
+        node.linked = new LinkedHashSet<>(linked);
 
         // get item
         if (another.item!=null)
@@ -155,7 +156,12 @@ public class Node {
         if (monsters.size()>0) {
             builder.append(" -- Monsters: ").append(monsters.toString());
         }
-        builder.append(" -- ").append(linked.size()).append(" Linked");
+        builder.append(" -- ").append(linked.size()).append(" Linked ");
+
+        for(Node node : linked) {
+            builder.append(node.id).append(",");
+        }
+
         return builder.toString();
     }
 
