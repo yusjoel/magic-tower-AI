@@ -13,7 +13,9 @@ namespace Gempoll
 
         public readonly List<string> route;
 
-        private int cnt;
+        public int cnt;
+
+        public int Id;
 
         public Node current;
 
@@ -141,17 +143,8 @@ namespace Gempoll
                 if (o2 == null)
                     throw new ArgumentNullException(nameof(o2));
 
-                if (o1.cnt != o2.cnt)
-                    return o1.cnt - o2.cnt;
-
-                int score1 = o1.getScore();
-                int score2 = o2.getScore();
-
-                if (score1 != score2)
-                    return score2 - score1;
-
-                // 评分相等的情况下, 令o1的优先级低于o2, 这是针对PriorityQueue的强行修改, 来保持行为上和java的PriorityQueue相似
-                return 1;
+                if (o1.cnt == o2.cnt) return o2.getScore() - o1.getScore();
+                return o1.cnt - o2.cnt;
             }
         }
     }

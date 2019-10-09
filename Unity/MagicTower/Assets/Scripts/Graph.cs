@@ -1,4 +1,5 @@
 ﻿using Medallion.Collections;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 
@@ -405,6 +406,20 @@ namespace Gempoll
             return false;
         }
 
+        private void PrintQueue(PriorityQueue<State> queue)
+        {
+            TestContext.Out.WriteLine("=====QUEUE=====");
+            var array = new State[queue.Count];
+            var collection = (ICollection<State>) queue;
+            collection.CopyTo(array, 0);
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                var state = array[i];
+                TestContext.Out.WriteLine("{0}, id: {1}, cnt: {2}, score: {3}", i, state.Id, state.cnt, state.getScore());
+            }
+        }
+
         public State run()
         {
             var state = new State(this, list[0]);
@@ -421,13 +436,18 @@ namespace Gempoll
 
             var queue = new PriorityQueue<State>(State.GetComparer());
 
+            int stateId = 1;
+
             queue.Enqueue(state);
 
             while (queue.Count > 0)
             {
                 state = queue.Dequeue();
+                //PrintQueue(queue);
 
-                Console.WriteLine("poll: " + state.current);
+                //if (state.getScore() == 1035)
+                //    break;
+                //Console.WriteLine("Poll: {0}, Cnt {1}, Score {2}", state.current, state.cnt, state.getScore());
 
                 if (!set.Add(state.hash())) continue;
 
@@ -456,17 +476,19 @@ namespace Gempoll
                     if (score > another.getScore()) continue;
 
                     map[hash] = another.getScore();
+                    another.Id = stateId++;
                     queue.Enqueue(another);
+
+                    //PrintQueue(queue);
                 }
 
                 index++;
                 if (index % 1000 == 0)
                 {
-                    break;
-                    Console.WriteLine("Calculating... {0} calculated, {1} still in queue.", index, queue.Count);
+                    TestContext.Out.WriteLine("Calculating... {0} calculated, {1} still in queue.", index, queue.Count);
                 }
             }
-            Console.WriteLine("cnt: " + index + "; solutions: " + solutions);
+            TestContext.Out.WriteLine("cnt: " + index + "; solutions: " + solutions);
 
             //if (answer == null)
             //{
@@ -481,7 +503,7 @@ namespace Gempoll
             //}
 
             int end = DateTime.Now.Millisecond;
-            Console.WriteLine("Time used: {0:f3}s", (end - start) / 1000f);
+            TestContext.Out.WriteLine("Time used: {0:f3}s", (end - start) / 1000f);
 
             return answer;
         }
