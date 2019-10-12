@@ -8,11 +8,11 @@
 
         private readonly int start;
 
-        private int def;
+        private readonly int def;
 
-        private int hp;
+        private readonly int hp;
 
-        private int mdef;
+        private readonly int mdef;
 
         public Shop(int start, int delta, int hp, int atk, int def, int mdef)
         {
@@ -27,6 +27,21 @@
         public int getAtkPoint()
         {
             return atk;
+        }
+
+        public int getDefPoint()
+        {
+            return def;
+        }
+
+        public int getHpPoint()
+        {
+            return hp;
+        }
+
+        public int getMDefPoint()
+        {
+            return mdef;
         }
 
         public int moneyNeeded(int visitTime)

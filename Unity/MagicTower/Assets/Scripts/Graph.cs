@@ -7,53 +7,53 @@ namespace Gempoll
 {
     public class Graph
     {
-        public static readonly int ROAD = 0;
+        public const int ROAD = 0;
 
-        public static readonly int WALL = 1;
+        public const int WALL = 1;
 
-        public static readonly int RED_JEWEL = 27;
+        public const int RED_JEWEL = 27;
 
-        public static readonly int BLUE_JEWEL = 28;
+        public const int BLUE_JEWEL = 28;
 
-        public static readonly int GREEN_JEWEL = 29;
+        public const int GREEN_JEWEL = 29;
 
-        public static readonly int YELLOW_KEY = 21;
+        public const int YELLOW_KEY = 21;
 
-        public static readonly int BLUE_KEY = 22;
+        public const int BLUE_KEY = 22;
 
-        public static readonly int RED_KEY = 23;
+        public const int RED_KEY = 23;
 
-        public static readonly int GREEN_KEY = 24;
+        public const int GREEN_KEY = 24;
 
-        public static readonly int RED_POTION = 31;
+        public const int RED_POTION = 31;
 
-        public static readonly int BLUE_POTION = 32;
+        public const int BLUE_POTION = 32;
 
-        public static readonly int GREEN_POTION = 33;
+        public const int GREEN_POTION = 33;
 
-        public static readonly int YELLOW_POTION = 34;
+        public const int YELLOW_POTION = 34;
 
-        public static readonly int SWORD = 35;
+        public const int SWORD = 35;
 
-        public static readonly int SHIELD = 36;
+        public const int SHIELD = 36;
 
-        public static readonly int SHOP = 40;
+        public const int SHOP = 40;
 
-        public static readonly int DOOR_YELLOW = 81;
+        public const int DOOR_YELLOW = 81;
 
-        public static readonly int DOOR_BLUE = 82;
+        public const int DOOR_BLUE = 82;
 
-        public static readonly int DOOR_RED = 83;
+        public const int DOOR_RED = 83;
 
-        public static readonly int DOOR_GREEN = 84;
+        public const int DOOR_GREEN = 84;
 
-        public static readonly int UPSTAIR = 87;
+        public const int UPSTAIR = 87;
 
-        public static readonly int DOWNSTAIR = 88;
+        public const int DOWNSTAIR = 88;
 
-        public static readonly int MONSTER_BOUND = 201;
+        public const int MONSTER_BOUND = 201;
 
-        public static readonly int BOSS_INDEX = 299;
+        public const int BOSS_INDEX = 299;
 
         /// <summary>
         ///     层的列数
@@ -75,7 +75,7 @@ namespace Gempoll
         /// <summary>
         ///     地图
         /// </summary>
-        private readonly int[,,] map;
+        public readonly int[,,] map;
 
         private readonly Dictionary<int, Monster> monsterMap;
 

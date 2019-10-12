@@ -68,6 +68,17 @@
     <Compile Include="Assets\Scripts\Shop.cs" />
     <Compile Include="Assets\Scripts\State.cs" />
     <Compile Include="Assets\Scripts\Util.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Door.cs" />
+    <Compile Include="Assets\Scripts\Visualization\DoorType.cs" />
+    <Compile Include="Assets\Scripts\Visualization\GraphDrawer.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Helper.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Hero.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Item.cs" />
+    <Compile Include="Assets\Scripts\Visualization\ItemType.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Monster.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Road.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Shop.cs" />
+    <Compile Include="Assets\Scripts\Visualization\Wall.cs" />
     <None Include="Assets\StreamingAssets\map2-nodes.txt" />
     <None Include="Assets\StreamingAssets\map1-nodes.txt" />
     <None Include="Assets\StreamingAssets\map1.txt" />
@@ -76,6 +87,7 @@
     <None Include="Assets\StreamingAssets\map2.txt" />
     <None Include="Assets\StreamingAssets\map1-answer.txt" />
     <None Include="Assets\StreamingAssets\map2-answer.txt" />
+    <None Include="Assets\StreamingAssets\map3.txt" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Github/magic-tower-AI/Unity/MagicTower/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
