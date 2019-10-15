@@ -1,6 +1,7 @@
 ﻿using Medallion.Collections;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Gempoll
@@ -65,8 +66,6 @@ namespace Gempoll
         /// </summary>
         public readonly int floorCount;
 
-        private readonly Hero hero;
-
         /// <summary>
         ///     节点列表
         /// </summary>
@@ -76,6 +75,13 @@ namespace Gempoll
         ///     地图
         /// </summary>
         public readonly int[,,] map;
+
+        /// <summary>
+        ///     层的行数
+        /// </summary>
+        public readonly int rowCount;
+
+        private readonly Hero hero;
 
         private readonly Dictionary<int, Monster> monsterMap;
 
@@ -96,11 +102,6 @@ namespace Gempoll
         private readonly int p_sword;
 
         private readonly int p_yellow;
-
-        /// <summary>
-        ///     层的行数
-        /// </summary>
-        public readonly int rowCount;
 
         private readonly bool shouldMerge;
 
@@ -365,6 +366,38 @@ namespace Gempoll
                         return;
                     }
                 }
+            }
+        }
+
+        public IEnumerator MergeNodeAsync()
+        {
+            bool merged = false;
+
+            for (int i = 1; i < list.Count; i++)
+            {
+                var n1 = list[i];
+                for (int j = i + 1; j < list.Count; j++)
+                {
+                    var n2 = list[j];
+                    if (ShouldMerge(n1, n2))
+                    {
+                        n1.merge(n2);
+                        list.RemoveAt(j);
+                        merged = true;
+                        break;
+                    }
+                }
+                if (merged)
+                    break;
+
+                yield return n1;
+            }
+
+            if (merged)
+            {
+                var enumerator = MergeNodeAsync();
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
             }
         }
 

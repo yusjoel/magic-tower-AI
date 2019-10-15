@@ -44,6 +44,8 @@ namespace Gempoll
         /// </summary>
         public LinkedHashSet<Node> linked;
 
+        public List<Node> MergedNodes;
+
         /// <summary>
         ///     节点的类型
         /// </summary>
@@ -70,6 +72,7 @@ namespace Gempoll
             monsters = new List<Monster>();
             doors = new List<int>();
             linked = new LinkedHashSet<Node>();
+            MergedNodes = new List<Node>();
         }
 
         public void addNode(Node another)
@@ -107,6 +110,8 @@ namespace Gempoll
                 }
                 to.linked.Remove(another);
             }
+
+            MergedNodes.Add(another);
         }
 
         public Node merge(Node another, bool[] visited)
