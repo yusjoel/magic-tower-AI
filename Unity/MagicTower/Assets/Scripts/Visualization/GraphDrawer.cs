@@ -11,6 +11,16 @@ namespace Gempoll.Visualization
         public GameObject DoorPrefab;
 
         /// <summary>
+        ///     英雄预制体
+        /// </summary>
+        public GameObject HeroPrefab;
+
+        /// <summary>
+        ///     水平的线的预制体
+        /// </summary>
+        public GameObject HorizonLinePrefab;
+
+        /// <summary>
         ///     道具预制体
         /// </summary>
         public GameObject ItemPrefab;
@@ -20,26 +30,56 @@ namespace Gempoll.Visualization
         /// </summary>
         public GameObject MonsterPrefab;
 
+        /// <summary>
+        ///     道路预制体
+        /// </summary>
         public GameObject RoadPrefab;
 
+        /// <summary>
+        ///     商店预制体
+        /// </summary>
         public GameObject ShopPrefab;
 
+        /// <summary>
+        ///     向下楼梯预制体
+        /// </summary>
         public GameObject StairDownPrefab;
 
+        /// <summary>
+        ///     向上楼梯预制体
+        /// </summary>
         public GameObject StairUpPrefab;
 
-        public GameObject WallPrefab;
+        /// <summary>
+        ///     垂直的线的预制体
+        /// </summary>
+        public GameObject VerticalLinePrefab;
 
-        public GameObject HeroPrefab;
+        /// <summary>
+        ///     墙预制体
+        /// </summary>
+        public GameObject WallPrefab;
 
         /// <summary>
         ///     当前楼层
         /// </summary>
         private int floor;
 
+        /// <summary>
+        ///     当前图
+        /// </summary>
         private Graph graph;
 
-        private void Draw()
+        private float lineWidth = 4;
+
+        private readonly float spriteHeight = 32f;
+
+        private readonly float spriteWidth = 32f;
+
+        /// <summary>
+        ///     描绘当前楼层
+        /// </summary>
+        private void DrawFloor()
         {
             for (int i = 0; i < graph.rowCount; i++)
             for (int j = 0; j < graph.columnCount; j++)
@@ -99,7 +139,7 @@ namespace Gempoll.Visualization
                 {
                     go.SetActive(true);
                     var t = go.GetComponent<RectTransform>();
-                    t.anchoredPosition = new Vector2(i * 32, j * 32);
+                    t.anchoredPosition = CalculatePosition(i, j);
                 }
             }
 
@@ -109,8 +149,15 @@ namespace Gempoll.Visualization
                 var go = Instantiate(HeroPrefab, transform);
                 go.SetActive(true);
                 var t = go.GetComponent<RectTransform>();
-                t.anchoredPosition = new Vector2(heroNode.x * 32, heroNode.y * 32);
+                t.anchoredPosition = CalculatePosition(heroNode.x, heroNode.y);
             }
+        }
+
+        private Vector2 CalculatePosition(int i, int j)
+        {
+            float x = (i - graph.rowCount / 2f + 0.5f) * spriteWidth;
+            float y = (j - graph.columnCount / 2f + 0.5f) * spriteHeight;
+            return new Vector2(x, y);
         }
 
         private void CreateRoad(int i, int j)
@@ -118,7 +165,7 @@ namespace Gempoll.Visualization
             var go = Instantiate(RoadPrefab, transform);
             go.SetActive(true);
             var t = go.GetComponent<RectTransform>();
-            t.anchoredPosition = new Vector2(i * 32, j * 32);
+            t.anchoredPosition = CalculatePosition(i, j);
         }
 
         private GameObject CreateMonster(int n)
@@ -168,14 +215,60 @@ namespace Gempoll.Visualization
 
         private void Start()
         {
-            ReadGraph("map1", false);
+            ReadGraph("map2", false);
 
             floor = 0;
-            Draw();
+            DrawFloor();
+
+            graph.Build();
+            DrawNodes();
         }
 
-        private void Update()
+        private enum LinePosition
         {
+            Top,
+
+            Bottom,
+
+            Left,
+
+            Right
+        }
+
+        private void DrawNodes()
+        {
+            foreach (var node in graph.list)
+            {
+                // 上
+                CreateLine(node.x, node.y, LinePosition.Top);
+                // 下
+                CreateLine(node.x, node.y, LinePosition.Bottom);
+                // 左
+                CreateLine(node.x, node.y, LinePosition.Left);
+                // 右
+                CreateLine(node.x, node.y, LinePosition.Right);
+            }
+        }
+
+        private void CreateLine(int i, int j, LinePosition linePosition)
+        {
+            var position = CalculatePosition(i, j);
+            if(linePosition == LinePosition.Left)
+                position.x = position.x - 0.5f * spriteWidth + 0.5f * lineWidth;
+            else if (linePosition == LinePosition.Right)
+                position.x = position.x + 0.5f * spriteWidth - 0.5f * lineWidth;
+            else if (linePosition == LinePosition.Top)
+                position.y = position.y + 0.5f * spriteHeight - 0.5f * lineWidth;
+            else if (linePosition == LinePosition.Bottom)
+                position.y = position.y - 0.5f * spriteHeight + 0.5f * lineWidth;
+
+            var prefab = linePosition == LinePosition.Top || linePosition == LinePosition.Bottom
+                ? HorizonLinePrefab
+                : VerticalLinePrefab;
+            var go = Instantiate(prefab, transform);
+            go.SetActive(true);
+            var t = go.GetComponent<RectTransform>();
+            t.anchoredPosition = position;
         }
     }
 }
