@@ -52,15 +52,15 @@
         public bool useShop(Hero hero, int visitTime)
         {
             if (visitTime < 0) return false;
-            if (hero.money < moneyNeeded(visitTime)) return false;
+            if (hero.Money < moneyNeeded(visitTime)) return false;
 
             /**
              * Algorithm to choose HP/ATK/DEF/MDEF
              */
 
-            // Add atk
-            hero.money -= moneyNeeded(visitTime);
-            hero.atk += getAtkPoint();
+            // Add Attack
+            hero.Money -= moneyNeeded(visitTime);
+            hero.Attack += getAtkPoint();
             return true;
         }
     }

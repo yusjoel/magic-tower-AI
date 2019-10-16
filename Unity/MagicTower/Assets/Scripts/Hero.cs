@@ -1,70 +1,75 @@
 ﻿namespace Gempoll
 {
+    /// <summary>
+    ///     英雄
+    /// </summary>
     public class Hero
     {
-        public int atk;
+        public int Attack;
 
-        public int blue;
+        public int BlueKeyCount;
 
-        public int def;
+        public int Defense;
 
-        public int green;
+        public int GreenKeyCount;
 
-        public int hp;
+        public int HitPoint;
 
-        public int mdef;
+        public int MagicDefense;
 
-        public int money;
+        public int Money;
 
-        public int red;
+        public int RedKeyCount;
 
-        public int yellow;
+        public int YellowKeyCount;
 
-        public Hero(int hp, int atk, int def, int mdef, int money, int yellow, int blue, int red, int green)
+        public Hero(int hitPoint, int attack, int defense, int magicDefense, int money, int yellowKeyCount,
+            int blueKeyCount, int redKeyCount, int greenKeyCount)
         {
-            this.hp = hp;
-            this.atk = atk;
-            this.def = def;
-            this.mdef = mdef;
-            this.money = money;
-            this.yellow = yellow;
-            this.blue = blue;
-            this.red = red;
-            this.green = green;
+            HitPoint = hitPoint;
+            Attack = attack;
+            Defense = defense;
+            MagicDefense = magicDefense;
+            Money = money;
+            YellowKeyCount = yellowKeyCount;
+            BlueKeyCount = blueKeyCount;
+            RedKeyCount = redKeyCount;
+            GreenKeyCount = greenKeyCount;
         }
 
-        public Hero(Hero another) : this(another.hp, another.atk, another.def, another.mdef, another.money,
-            another.yellow, another.blue, another.red, another.green)
+        public Hero(Hero another) : this(another.HitPoint, another.Attack, another.Defense, another.MagicDefense,
+            another.Money, another.YellowKeyCount, another.BlueKeyCount, another.RedKeyCount, another.GreenKeyCount)
         {
         }
 
-        public void getItem(Item item)
+        public void GetItem(Item item)
         {
             if (item == null) return;
 
-            hp += item.hp;
-            atk += item.atk;
-            def += item.def;
-            mdef += item.mdef;
-            yellow += item.yellow;
-            blue += item.blue;
-            red += item.red;
-            green += item.green;
+            HitPoint += item.hp;
+            Attack += item.atk;
+            Defense += item.def;
+            MagicDefense += item.mdef;
+            YellowKeyCount += item.yellow;
+            BlueKeyCount += item.blue;
+            RedKeyCount += item.red;
+            GreenKeyCount += item.green;
         }
 
-        public int getScore()
+        public int GetScore()
         {
-            return hp;
+            return HitPoint;
         }
 
-        public bool isValid()
+        public bool IsValid()
         {
-            return hp > 0 && yellow >= 0 && blue >= 0 && red >= 0 && green >= 0;
+            return HitPoint > 0 && YellowKeyCount >= 0 && BlueKeyCount >= 0 && RedKeyCount >= 0 && GreenKeyCount >= 0;
         }
 
         public override string ToString()
         {
-            return $"({hp},{atk},{def},{mdef},{money},{yellow},{blue},{red},{green})";
+            return
+                $"({HitPoint},{Attack},{Defense},{MagicDefense},{Money},{YellowKeyCount},{BlueKeyCount},{RedKeyCount},{GreenKeyCount})";
         }
     }
 }

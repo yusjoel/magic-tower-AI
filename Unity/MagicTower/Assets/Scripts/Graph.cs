@@ -493,9 +493,9 @@ namespace Gempoll
                 state = queue.Dequeue();
                 //PrintQueue(queue);
 
-                //if (state.getScore() == 1035)
+                //if (state.GetScore() == 1035)
                 //    break;
-                //Console.WriteLine("Poll: {0}, Cnt {1}, Score {2}", state.current, state.cnt, state.getScore());
+                //Console.WriteLine("Poll: {0}, Cnt {1}, Score {2}", state.current, state.cnt, state.GetScore());
 
                 if (!set.Add(state.hash())) continue;
 

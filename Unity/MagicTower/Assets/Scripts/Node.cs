@@ -87,7 +87,7 @@ namespace Gempoll
 
         public int getScore()
         {
-            return hero == null ? 0 : hero.getScore();
+            return hero == null ? 0 : hero.GetScore();
         }
 
         public void merge(Node another)
@@ -121,20 +121,20 @@ namespace Gempoll
 
             // get item
             if (another.item != null)
-                node.hero.getItem(another.item);
+                node.hero.GetItem(another.item);
 
             // open doors...
             foreach (int v in another.doors)
             {
-                if (v == 1) node.hero.yellow--;
-                if (v == 2) node.hero.blue--;
-                if (v == 3) node.hero.red--;
+                if (v == 1) node.hero.YellowKeyCount--;
+                if (v == 2) node.hero.BlueKeyCount--;
+                if (v == 3) node.hero.RedKeyCount--;
             }
 
             // beat monsters...
-            foreach (var monster in another.monsters) node.hero.hp -= Util.getDamage(node.hero, monster);
+            foreach (var monster in another.monsters) node.hero.HitPoint -= Util.getDamage(node.hero, monster);
 
-            if (!node.hero.isValid())
+            if (!node.hero.IsValid())
                 return null;
 
             // merge linked nodes
