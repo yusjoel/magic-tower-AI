@@ -56,6 +56,7 @@
             totalDamage -= heroMagicDefense;
 
             // 魔防不回血
+            // 如果可以回血, 会影响到Node.ShouldEat的判断
             return totalDamage <= 0 ? 0 : totalDamage;
         }
     }

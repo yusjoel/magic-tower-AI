@@ -61,9 +61,14 @@
             return HitPoint;
         }
 
+        /// <summary>
+        /// 验证合法性
+        /// </summary>
+        /// <returns></returns>
         public bool IsValid()
         {
-            // TODO: 为什么钥匙没了就结束了?
+            // 打不过的怪
+            // 开不了的门
             return HitPoint > 0 && YellowKeyCount >= 0 && BlueKeyCount >= 0 && RedKeyCount >= 0 && GreenKeyCount >= 0;
         }
 

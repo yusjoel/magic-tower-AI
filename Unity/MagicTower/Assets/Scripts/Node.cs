@@ -113,16 +113,13 @@ namespace Gempoll
         /// <param name="another"></param>
         public void Merge(Node another)
         {
-            // merge items...
-            // TODO: 这里吃掉了合并的道具
-            if (Item != null) Item.Merge(another.Item);
-
-            // merge doors...
+            // 合并节点中的物件
+            // 可以合并的节点只会出现两边Item都不为空和都为空两种情况
+            Item?.Merge(another.Item);
             Doors.AddRange(another.Doors);
-            // merge monsters...
             Monsters.AddRange(another.Monsters);
 
-            // merge nodes
+            // 处理连接关系
             foreach (var to in another.LinkedNodes)
             {
                 if (to != this)
@@ -133,6 +130,7 @@ namespace Gempoll
                 to.LinkedNodes.Remove(another);
             }
 
+            // 加入到已合并节点列表
             MergedNodes.Add(another);
         }
 
@@ -240,7 +238,7 @@ namespace Gempoll
             // 有门, 不吃
             if (Doors.Count > 0) return false;
 
-            // TODO: 没怪物为什么不吃?
+            // 没有怪物, 那么就是英雄节点, 不吃
             if (Monsters.Count == 0) return false;
 
             // 所有的怪物, 如果有伤害, 不吃
