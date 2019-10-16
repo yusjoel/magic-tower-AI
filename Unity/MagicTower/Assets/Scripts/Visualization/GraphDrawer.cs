@@ -131,53 +131,53 @@ namespace Gempoll.Visualization
         /// </summary>
         private void DrawFloor()
         {
-            for (int i = 0; i < graph.rowCount; i++)
-            for (int j = 0; j < graph.columnCount; j++)
+            for (int i = 0; i < graph.RowCount; i++)
+            for (int j = 0; j < graph.ColumnCount; j++)
             {
                 CreateRoad(i, j);
 
-                int n = graph.map[floor, i, j];
+                int n = graph.Map[floor, i, j];
                 GameObject go = null;
                 switch (n)
                 {
-                    case Graph.DOOR_YELLOW:
-                    case Graph.DOOR_BLUE:
-                    case Graph.DOOR_RED:
-                    case Graph.DOOR_GREEN:
+                    case ObjectId.DOOR_YELLOW:
+                    case ObjectId.DOOR_BLUE:
+                    case ObjectId.DOOR_RED:
+                    case ObjectId.DOOR_GREEN:
                         go = CreateDoor(n);
                         break;
-                    case Graph.YELLOW_KEY:
-                    case Graph.BLUE_KEY:
-                    case Graph.RED_KEY:
-                    case Graph.GREEN_KEY:
-                    case Graph.SWORD:
-                    case Graph.SHIELD:
-                    case Graph.BLUE_JEWEL:
-                    case Graph.RED_JEWEL:
-                    case Graph.GREEN_JEWEL:
-                    case Graph.RED_POTION:
-                    case Graph.BLUE_POTION:
-                    case Graph.YELLOW_POTION:
-                    case Graph.GREEN_POTION:
+                    case ObjectId.YELLOW_KEY:
+                    case ObjectId.BLUE_KEY:
+                    case ObjectId.RED_KEY:
+                    case ObjectId.GREEN_KEY:
+                    case ObjectId.SWORD:
+                    case ObjectId.SHIELD:
+                    case ObjectId.BLUE_JEWEL:
+                    case ObjectId.RED_JEWEL:
+                    case ObjectId.GREEN_JEWEL:
+                    case ObjectId.RED_POTION:
+                    case ObjectId.BLUE_POTION:
+                    case ObjectId.YELLOW_POTION:
+                    case ObjectId.GREEN_POTION:
                         go = CreateItem(n);
                         break;
-                    case Graph.ROAD:
+                    case ObjectId.ROAD:
                         //go = Instantiate(RoadPrefab, transform);
                         break;
-                    case Graph.WALL:
+                    case ObjectId.WALL:
                         go = Instantiate(WallPrefab, ForegroundRoot);
                         break;
-                    case Graph.SHOP:
+                    case ObjectId.SHOP:
                         go = Instantiate(ShopPrefab, ForegroundRoot);
                         break;
-                    case Graph.UPSTAIR:
+                    case ObjectId.UPSTAIR:
                         go = Instantiate(StairUpPrefab, ForegroundRoot);
                         break;
-                    case Graph.DOWNSTAIR:
+                    case ObjectId.DOWNSTAIR:
                         go = Instantiate(StairDownPrefab, ForegroundRoot);
                         break;
                     default:
-                        if (n >= Graph.MONSTER_BOUND && n <= Graph.BOSS_INDEX)
+                        if (n >= ObjectId.MONSTER_BOUND && n <= ObjectId.BOSS_INDEX)
                             go = CreateMonster(n);
                         else
                             Debug.LogError("Unknown id: " + n);
@@ -193,7 +193,7 @@ namespace Gempoll.Visualization
                 }
             }
 
-            var heroNode = graph.heroNode;
+            var heroNode = graph.HeroNode;
             if (heroNode.Floor == floor)
             {
                 var go = Instantiate(HeroPrefab, transform);
@@ -211,8 +211,8 @@ namespace Gempoll.Visualization
         /// <returns></returns>
         private Vector2 CalculatePosition(int i, int j)
         {
-            float x = (i - graph.rowCount / 2f + 0.5f) * tileWidth;
-            float y = (j - graph.columnCount / 2f + 0.5f) * tileHeight;
+            float x = (i - graph.RowCount / 2f + 0.5f) * tileWidth;
+            float y = (j - graph.ColumnCount / 2f + 0.5f) * tileHeight;
             return new Vector2(x, y);
         }
 
@@ -388,17 +388,17 @@ namespace Gempoll.Visualization
             for (int i = 0; i < NodeRoot.childCount; i++)
                 Destroy(NodeRoot.GetChild(i).gameObject);
 
-            foreach (var node in graph.list)
+            foreach (var node in graph.Nodes)
                 DrawNode(node);
 
             // 描绘队列中的State
-            int nodesCount = graph.list.Count;
+            int nodesCount = graph.Nodes.Count;
             var visitedNodes = new List<Node>();
             for (int i = 0; i < nodesCount; i++)
             {
                 bool visited = state.VisitedNodes[i];
                 if (visited)
-                    visitedNodes.Add(graph.list[i]);
+                    visitedNodes.Add(graph.Nodes[i]);
             }
 
             // 对所有访问过的几点加遮罩
@@ -414,7 +414,7 @@ namespace Gempoll.Visualization
             for (int i = 0; i < NodeRoot.childCount; i++)
                 Destroy(NodeRoot.GetChild(i).gameObject);
 
-            foreach (var node in graph.list)
+            foreach (var node in graph.Nodes)
             {
                 DrawNode(node);
 

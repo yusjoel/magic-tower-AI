@@ -39,14 +39,14 @@ namespace Gempoll.Editor.Tests
                 var scanner = new Scanner(fileStream);
                 var graph = new Graph(scanner, false, false);
                 // 起始的3个数据
-                Assert.AreEqual(1, graph.floorCount);
-                Assert.AreEqual(11, graph.rowCount);
-                Assert.AreEqual(11, graph.columnCount);
+                Assert.AreEqual(1, graph.FloorCount);
+                Assert.AreEqual(11, graph.RowCount);
+                Assert.AreEqual(11, graph.ColumnCount);
 
                 // 最后的3个数据
-                Assert.AreEqual(0, graph.heroNode.Floor);
-                Assert.AreEqual(0, graph.heroNode.X);
-                Assert.AreEqual(5, graph.heroNode.Y);
+                Assert.AreEqual(0, graph.HeroNode.Floor);
+                Assert.AreEqual(0, graph.HeroNode.X);
+                Assert.AreEqual(5, graph.HeroNode.Y);
 
                 // 应该正好读完
                 Assert.Throws<IndexOutOfRangeException>(() =>
@@ -110,7 +110,7 @@ namespace Gempoll.Editor.Tests
                 var scanner = new Scanner(fileStream);
                 var graph = new Graph(scanner, true, true);
                 graph.Build();
-                var answer = graph.run();
+                var answer = graph.Run();
 
                 var stringBuilder = new StringBuilder();
 
@@ -150,14 +150,14 @@ namespace Gempoll.Editor.Tests
 
                 int valid = 0;
                 var stringBuilder = new StringBuilder();
-                foreach (var node in graph.list)
+                foreach (var node in graph.Nodes)
                 {
                     stringBuilder.AppendLine(node.ToString());
                     if (node.Doors.Count > 0 || node.Monsters.Count > 0)
                         valid++;
                 }
 
-                stringBuilder.AppendLine(valid + "/" + graph.list.Count + " nodes in total.");
+                stringBuilder.AppendLine(valid + "/" + graph.Nodes.Count + " nodes in total.");
 
                 string result = stringBuilder.ToString();
 

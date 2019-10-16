@@ -43,7 +43,7 @@ namespace Gempoll
             this.graph = graph;
             Current = node;
             Count = 0;
-            VisitedNodes = new bool[this.graph.list.Count];
+            VisitedNodes = new bool[this.graph.Nodes.Count];
             VisitedNodes[Current.Id] = true;
             Route = new List<string> { Current.ToString() };
             shopTime = -1;
@@ -72,7 +72,7 @@ namespace Gempoll
                 foreach (var node in Current.LinkedNodes)
                 {
                     if (VisitedNodes[node.Id]) continue;
-                    if (!node.ShouldEat(graph.shouldEat ? Current.Hero : null)) continue;
+                    if (!node.ShouldEat(graph.ShouldEat ? Current.Hero : null)) continue;
 
                     has = true;
                     Current = Current.Merge(node, VisitedNodes);
@@ -83,7 +83,7 @@ namespace Gempoll
                 }
             }
             // Use shop
-            while (graph.shop.Buy(Current.Hero, shopTime))
+            while (graph.Shop.Buy(Current.Hero, shopTime))
                 shopTime++;
         }
 
@@ -110,7 +110,7 @@ namespace Gempoll
             // TODO: 点数无法超过long的位数, 也就是64个
             long val = 0;
             int i = 0;
-            foreach (var node in graph.list)
+            foreach (var node in graph.Nodes)
             {
                 if (node.Doors.Count == 0 && node.Monsters.Count == 0) continue;
 
@@ -152,7 +152,7 @@ namespace Gempoll
                 return true;
 
             // Boss被打死？
-            if (graph.bossId >= 0 && VisitedNodes[graph.bossId])
+            if (graph.NodeIdOfBoss >= 0 && VisitedNodes[graph.NodeIdOfBoss])
                 return true;
 
             return false;

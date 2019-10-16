@@ -1,107 +1,61 @@
-﻿using Medallion.Collections;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Medallion.Collections;
+using NUnit.Framework;
 
 namespace Gempoll
 {
+    /// <summary>
+    ///     图 (TODO: 职责太多, 需要拆分)
+    /// </summary>
     public class Graph
     {
-        public const int ROAD = 0;
-
-        public const int WALL = 1;
-
-        public const int RED_JEWEL = 27;
-
-        public const int BLUE_JEWEL = 28;
-
-        public const int GREEN_JEWEL = 29;
-
-        public const int YELLOW_KEY = 21;
-
-        public const int BLUE_KEY = 22;
-
-        public const int RED_KEY = 23;
-
-        public const int GREEN_KEY = 24;
-
-        public const int RED_POTION = 31;
-
-        public const int BLUE_POTION = 32;
-
-        public const int GREEN_POTION = 33;
-
-        public const int YELLOW_POTION = 34;
-
-        public const int SWORD = 35;
-
-        public const int SHIELD = 36;
-
-        public const int SHOP = 40;
-
-        public const int DOOR_YELLOW = 81;
-
-        public const int DOOR_BLUE = 82;
-
-        public const int DOOR_RED = 83;
-
-        public const int DOOR_GREEN = 84;
-
-        public const int UPSTAIR = 87;
-
-        public const int DOWNSTAIR = 88;
-
-        public const int MONSTER_BOUND = 201;
-
-        public const int BOSS_INDEX = 299;
-
         /// <summary>
         ///     层的列数
         /// </summary>
-        public readonly int columnCount;
+        public readonly int ColumnCount;
 
         /// <summary>
         ///     总层数
         /// </summary>
-        public readonly int floorCount;
+        public readonly int FloorCount;
 
         /// <summary>
         ///     节点列表
         /// </summary>
-        public readonly List<Node> list;
+        public readonly List<Node> Nodes;
 
+        // TODO: 读取的地图信息应该独立出去成为一个类
         /// <summary>
         ///     地图
         /// </summary>
-        public readonly int[,,] map;
+        public readonly int[,,] Map;
 
         /// <summary>
         ///     层的行数
         /// </summary>
-        public readonly int rowCount;
-
-        private readonly Hero hero;
+        public readonly int RowCount;
 
         private readonly Dictionary<int, Monster> monsterMap;
 
-        private readonly int p_atk;
+        private readonly int attackOfRedJewel;
 
-        private readonly int p_blue;
+        private readonly int hitPointOfBluePotion;
 
-        private readonly int p_def;
+        private readonly int defenseOfBlueJewel;
 
-        private readonly int p_green;
+        private readonly int hitPointOfGreenPotion;
 
-        private readonly int p_mdef;
+        private readonly int magicDefenseOfGreenJewel;
 
-        private readonly int p_red;
+        private readonly int hitPointOfRedPotion;
 
-        private readonly int p_shield;
+        private readonly int defenseOfShield;
 
-        private readonly int p_sword;
+        private readonly int attackOfSword;
 
-        private readonly int p_yellow;
+        private readonly int hitPointOfYellowPotion;
 
         private readonly bool shouldMerge;
 
@@ -113,41 +67,41 @@ namespace Gempoll
         /// </summary>
         private readonly int[][] stair;
 
-        public int bossId = -1;
+        public int NodeIdOfBoss = -1;
 
-        public Node heroNode;
+        public Node HeroNode;
 
-        public Shop shop;
+        public Shop Shop;
 
-        public bool shouldEat;
+        public bool ShouldEat;
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
-            list = new List<Node>();
-            floorCount = scanner.NextInt();
-            rowCount = scanner.NextInt();
-            columnCount = scanner.NextInt();
-            map = new int[floorCount, rowCount, columnCount];
-            stair = new int[floorCount][];
+            Nodes = new List<Node>();
+            FloorCount = scanner.NextInt();
+            RowCount = scanner.NextInt();
+            ColumnCount = scanner.NextInt();
+            Map = new int[FloorCount, RowCount, ColumnCount];
+            stair = new int[FloorCount][];
 
-            for (int i = 0; i < floorCount; i++)
+            for (int i = 0; i < FloorCount; i++)
                 stair[i] = new[] { -1, -1, -1, -1 };
 
-            for (int i = 0; i < floorCount; i++)
-            for (int j = 0; j < rowCount; j++)
-            for (int k = 0; k < columnCount; k++)
-                map[i, j, k] = scanner.NextInt();
+            for (int i = 0; i < FloorCount; i++)
+            for (int j = 0; j < RowCount; j++)
+            for (int k = 0; k < ColumnCount; k++)
+                Map[i, j, k] = scanner.NextInt();
 
             // 读取道具属性
-            p_atk = scanner.NextInt();
-            p_def = scanner.NextInt();
-            p_mdef = scanner.NextInt();
-            p_red = scanner.NextInt();
-            p_blue = scanner.NextInt();
-            p_yellow = scanner.NextInt();
-            p_green = scanner.NextInt();
-            p_sword = scanner.NextInt();
-            p_shield = scanner.NextInt();
+            attackOfRedJewel = scanner.NextInt();
+            defenseOfBlueJewel = scanner.NextInt();
+            magicDefenseOfGreenJewel = scanner.NextInt();
+            hitPointOfRedPotion = scanner.NextInt();
+            hitPointOfBluePotion = scanner.NextInt();
+            hitPointOfYellowPotion = scanner.NextInt();
+            hitPointOfGreenPotion = scanner.NextInt();
+            attackOfSword = scanner.NextInt();
+            defenseOfShield = scanner.NextInt();
 
             // 读取怪物列表
             monsterMap = new Dictionary<int, Monster>();
@@ -161,121 +115,123 @@ namespace Gempoll
             }
 
             // 读取商店信息
-            shop = new Shop(scanner.NextInt(), scanner.NextInt(), scanner.NextInt(),
+            Shop = new Shop(scanner.NextInt(), scanner.NextInt(), scanner.NextInt(),
                 scanner.NextInt(), scanner.NextInt(), scanner.NextInt());
 
             // 读取英雄初始状态和位置
-            int hp = scanner.NextInt();
-            int atk = scanner.NextInt();
-            int def = scanner.NextInt();
-            int mdef = scanner.NextInt();
+            int hitPoint = scanner.NextInt();
+            int attack = scanner.NextInt();
+            int defense = scanner.NextInt();
+            int magicDefense = scanner.NextInt();
             int money = scanner.NextInt();
-            int yellow = scanner.NextInt();
-            int blue = scanner.NextInt();
-            int red = scanner.NextInt();
+            int yellowKeyCount = scanner.NextInt();
+            int blueKeyCount = scanner.NextInt();
+            int redKeyCount = scanner.NextInt();
             int floor = scanner.NextInt();
             int x = scanner.NextInt();
             int y = scanner.NextInt();
 
-            hero = new Hero(hp, atk, def, mdef, money, yellow, blue, red, 0);
-            heroNode = new Node(0, floor, x, y).SetHero(hero);
+            var hero = new Hero(hitPoint, attack, defense, magicDefense, money, yellowKeyCount, blueKeyCount,
+                redKeyCount, 0);
+            HeroNode = new Node(0, floor, x, y).SetHero(hero);
 
             this.shouldMerge = shouldMerge;
-            this.shouldEat = shouldEat;
+            ShouldEat = shouldEat;
         }
 
         public void Build()
         {
-            list.Add(heroNode);
+            Nodes.Add(HeroNode);
 
-            buildMap();
+            BuildMap();
 
             if (shouldMerge)
-                mergeNode();
+                MergeNode();
 
             // set id
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < Nodes.Count; i++)
             {
-                list[i].SetId(i);
-                if (list[i].ObjectId == BOSS_INDEX)
-                    bossId = i;
+                Nodes[i].SetId(i);
+                if (Nodes[i].ObjectId == ObjectId.BOSS_INDEX)
+                    NodeIdOfBoss = i;
             }
         }
 
-        private void buildMap()
+        private void BuildMap()
         {
-            for (int i = 0; i < floorCount; i++)
-            for (int j = 0; j < rowCount; j++)
-            for (int k = 0; k < columnCount; k++)
+            for (int i = 0; i < FloorCount; i++)
+            for (int j = 0; j < RowCount; j++)
+            for (int k = 0; k < ColumnCount; k++)
             {
                 Node node = null;
-                if (map[i, j, k] == UPSTAIR)
+                if (Map[i, j, k] == ObjectId.UPSTAIR)
                 {
                     stair[i][0] = j;
                     stair[i][1] = k;
                 }
-                if (map[i, j, k] == DOWNSTAIR)
+                if (Map[i, j, k] == ObjectId.DOWNSTAIR)
                 {
                     stair[i][2] = j;
                     stair[i][3] = k;
                 }
-                if (map[i, j, k] == YELLOW_KEY)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetYellowKeyCount(1));
-                if (map[i, j, k] == BLUE_KEY)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetBlueKeyCount(1));
-                if (map[i, j, k] == RED_KEY)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetRedKeyCount(1));
-                if (map[i, j, k] == GREEN_KEY)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetGreenKeyCount(1));
-                if (map[i, j, k] == RED_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetAttack(p_atk));
-                if (map[i, j, k] == BLUE_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetDefense(p_def));
-                if (map[i, j, k] == GREEN_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetMagicDefense(p_mdef));
-                if (map[i, j, k] == RED_POTION)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_red));
-                if (map[i, j, k] == BLUE_POTION)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_blue));
-                if (map[i, j, k] == YELLOW_POTION)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_yellow));
-                if (map[i, j, k] == GREEN_POTION)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_green));
-                if (map[i, j, k] == SWORD)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetAttack(p_sword));
-                if (map[i, j, k] == SHIELD)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetDefense(p_shield));
-                if (map[i, j, k] == SHOP)
-                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetSpecial(1));
+                if (Map[i, j, k] == ObjectId.YELLOW_KEY)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetYellowKeyCount(1));
+                if (Map[i, j, k] == ObjectId.BLUE_KEY)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetBlueKeyCount(1));
+                if (Map[i, j, k] == ObjectId.RED_KEY)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetRedKeyCount(1));
+                if (Map[i, j, k] == ObjectId.GREEN_KEY)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetGreenKeyCount(1));
+                if (Map[i, j, k] == ObjectId.RED_JEWEL)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetAttack(attackOfRedJewel));
+                if (Map[i, j, k] == ObjectId.BLUE_JEWEL)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetDefense(defenseOfBlueJewel));
+                if (Map[i, j, k] == ObjectId.GREEN_JEWEL)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(
+                        new Item().SetMagicDefense(magicDefenseOfGreenJewel));
+                if (Map[i, j, k] == ObjectId.RED_POTION)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfRedPotion));
+                if (Map[i, j, k] == ObjectId.BLUE_POTION)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfBluePotion));
+                if (Map[i, j, k] == ObjectId.YELLOW_POTION)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfYellowPotion));
+                if (Map[i, j, k] == ObjectId.GREEN_POTION)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfGreenPotion));
+                if (Map[i, j, k] == ObjectId.SWORD)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetAttack(attackOfSword));
+                if (Map[i, j, k] == ObjectId.SHIELD)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetDefense(defenseOfShield));
+                if (Map[i, j, k] == ObjectId.SHOP)
+                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetSpecial(1));
 
-                if (map[i, j, k] == DOOR_YELLOW)
-                    node = new Node(map[i, j, k], i, j, k).SetDoor(1);
-                if (map[i, j, k] == DOOR_BLUE)
-                    node = new Node(map[i, j, k], i, j, k).SetDoor(2);
-                if (map[i, j, k] == DOOR_RED)
-                    node = new Node(map[i, j, k], i, j, k).SetDoor(3);
-                if (map[i, j, k] == DOOR_GREEN)
-                    node = new Node(map[i, j, k], i, j, k).SetDoor(4);
-                if (map[i, j, k] >= MONSTER_BOUND)
+                if (Map[i, j, k] == ObjectId.DOOR_YELLOW)
+                    node = new Node(Map[i, j, k], i, j, k).SetDoor(1);
+                if (Map[i, j, k] == ObjectId.DOOR_BLUE)
+                    node = new Node(Map[i, j, k], i, j, k).SetDoor(2);
+                if (Map[i, j, k] == ObjectId.DOOR_RED)
+                    node = new Node(Map[i, j, k], i, j, k).SetDoor(3);
+                if (Map[i, j, k] == ObjectId.DOOR_GREEN)
+                    node = new Node(Map[i, j, k], i, j, k).SetDoor(4);
+                if (Map[i, j, k] >= ObjectId.MONSTER_BOUND)
                 {
-                    var monster = monsterMap[map[i, j, k]];
+                    var monster = monsterMap[Map[i, j, k]];
                     if (monster == null) continue;
 
-                    node = new Node(map[i, j, k], i, j, k).SetMonster(monster);
+                    node = new Node(Map[i, j, k], i, j, k).SetMonster(monster);
                 }
 
                 if (node != null)
-                    list.Add(node);
+                    Nodes.Add(node);
             }
 
             // build graph
-            int len = list.Count;
+            int len = Nodes.Count;
             for (int i = 0; i < len; i++)
             for (int j = i + 1; j < len; j++)
             {
-                var n1 = list[i];
-                var n2 = list[j];
-                if (isLinked(n1.Floor, n1.X, n1.Y, n2.Floor, n2.X, n2.Y))
+                var n1 = Nodes[i];
+                var n2 = Nodes[j];
+                if (IsLinked(n1.Floor, n1.X, n1.Y, n2.Floor, n2.X, n2.Y))
                 {
                     n1.Link(n2);
                     n2.Link(n1);
@@ -305,21 +261,21 @@ namespace Gempoll
         /// <param name="x2">节点2的x坐标</param>
         /// <param name="y2">节点2的y坐标</param>
         /// <returns></returns>
-        private bool isLinked(int f1, int x1, int y1, int f2, int x2, int y2)
+        private bool IsLinked(int f1, int x1, int y1, int f2, int x2, int y2)
         {
             // 不同层的的情况
             // 总是令节点1高于节点2
-            if (f1 < f2) return isLinked(f2, x2, y2, f1, x1, y1);
+            if (f1 < f2) return IsLinked(f2, x2, y2, f1, x1, y1);
 
             // 转化为节点1连通向下楼梯以及节点2连通向上楼梯
             if (f1 != f2)
-                return isLinked(f1, x1, y1, f1, stair[f1][2], stair[f1][3])
-                    && isLinked(f1 - 1, stair[f1 - 1][0], stair[f1 - 1][1], f2, x2, y2);
+                return IsLinked(f1, x1, y1, f1, stair[f1][2], stair[f1][3])
+                    && IsLinked(f1 - 1, stair[f1 - 1][0], stair[f1 - 1][1], f2, x2, y2);
 
             // 同层的情况
             if (x1 == x2 && y1 == y2) return true;
 
-            var visited = new bool[rowCount, columnCount];
+            var visited = new bool[RowCount, ColumnCount];
             visited[x1, y1] = true;
 
             var queue = new Queue<int>();
@@ -333,12 +289,12 @@ namespace Gempoll
                 foreach (var dir in directions)
                 {
                     int nx = x + dir[0], ny = y + dir[1];
-                    if (nx < 0 || nx >= rowCount || ny < 0 || ny >= columnCount) continue;
+                    if (nx < 0 || nx >= RowCount || ny < 0 || ny >= ColumnCount) continue;
 
                     if (nx == x2 && ny == y2) return true;
 
-                    if (visited[nx, ny] || map[f1, nx, ny] != ROAD
-                        && map[f1, nx, ny] != UPSTAIR && map[f1, nx, ny] != DOWNSTAIR)
+                    if (visited[nx, ny] || Map[f1, nx, ny] != ObjectId.ROAD
+                        && Map[f1, nx, ny] != ObjectId.UPSTAIR && Map[f1, nx, ny] != ObjectId.DOWNSTAIR)
                         continue;
 
                     visited[nx, ny] = true;
@@ -350,19 +306,19 @@ namespace Gempoll
             return false;
         }
 
-        private void mergeNode()
+        private void MergeNode()
         {
-            for (int i = 1; i < list.Count; i++)
+            for (int i = 1; i < Nodes.Count; i++)
             {
-                var n1 = list[i];
-                for (int j = i + 1; j < list.Count; j++)
+                var n1 = Nodes[i];
+                for (int j = i + 1; j < Nodes.Count; j++)
                 {
-                    var n2 = list[j];
+                    var n2 = Nodes[j];
                     if (ShouldMerge(n1, n2))
                     {
                         n1.Merge(n2);
-                        list.RemoveAt(j);
-                        mergeNode();
+                        Nodes.RemoveAt(j);
+                        MergeNode();
                         return;
                     }
                 }
@@ -373,16 +329,16 @@ namespace Gempoll
         {
             bool merged = false;
 
-            for (int i = 1; i < list.Count; i++)
+            for (int i = 1; i < Nodes.Count; i++)
             {
-                var n1 = list[i];
-                for (int j = i + 1; j < list.Count; j++)
+                var n1 = Nodes[i];
+                for (int j = i + 1; j < Nodes.Count; j++)
                 {
-                    var n2 = list[j];
+                    var n2 = Nodes[j];
                     if (ShouldMerge(n1, n2))
                     {
                         n1.Merge(n2);
-                        list.RemoveAt(j);
+                        Nodes.RemoveAt(j);
                         merged = true;
                         break;
                     }
@@ -401,6 +357,7 @@ namespace Gempoll
             }
         }
 
+    #if false
         private void PrintQueue(PriorityQueue<State> queue)
         {
             TestContext.Out.WriteLine("=====QUEUE=====");
@@ -415,10 +372,11 @@ namespace Gempoll
                     state.GetScore());
             }
         }
+    #endif
 
         public IEnumerator RunAsync()
         {
-            var state = new State(this, list[0]);
+            var state = new State(this, Nodes[0]);
             State answer = null;
 
             var set = new HashSet<long>();
@@ -468,9 +426,9 @@ namespace Gempoll
             }
         }
 
-        public State run()
+        public State Run()
         {
-            var state = new State(this, list[0]);
+            var state = new State(this, Nodes[0]);
             State answer = null;
 
             int index = 0, solutions = 0;
@@ -572,7 +530,7 @@ namespace Gempoll
                 return false;
 
             // 任意一个是Boss节点, 不能合并
-            if (n1.ObjectId == BOSS_INDEX || n2.ObjectId == BOSS_INDEX)
+            if (n1.ObjectId == ObjectId.BOSS_INDEX || n2.ObjectId == ObjectId.BOSS_INDEX)
                 return false;
 
             // 4. 如果都是消耗节点，且存在第三个节点同时和这两个节点相连，则不合并
