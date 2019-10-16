@@ -78,6 +78,8 @@ namespace Gempoll.Visualization
         /// </summary>
         public GameObject ShopPrefab;
 
+        public bool ShouldMerge;
+
         /// <summary>
         ///     向下楼梯预制体
         /// </summary>
@@ -101,7 +103,12 @@ namespace Gempoll.Visualization
         /// <summary>
         ///     合并操作的枚举器
         /// </summary>
-        private IEnumerator enumerator;
+        private IEnumerator enumeratorOfMerge;
+
+        /// <summary>
+        ///     求解操作的枚举器
+        /// </summary>
+        private IEnumerator enumeratorOfSolve;
 
         /// <summary>
         ///     当前楼层
@@ -112,6 +119,10 @@ namespace Gempoll.Visualization
         ///     当前图
         /// </summary>
         private Graph graph;
+
+        private bool solved;
+
+        private Coroutine coroutineOfSolve;
 
         /// <summary>
         ///     描绘当前楼层
@@ -283,7 +294,7 @@ namespace Gempoll.Visualization
 
         private void Start()
         {
-            ReadGraph("map2", false);
+            ReadGraph("map2", ShouldMerge);
 
             floor = 0;
             DrawFloor();
@@ -291,19 +302,106 @@ namespace Gempoll.Visualization
             graph.Build();
             DrawNodes();
 
-            enumerator = graph.MergeNodeAsync();
+            if (!ShouldMerge)
+                enumeratorOfMerge = graph.MergeNodeAsync();
         }
 
         private void OnGUI()
         {
-            if (enumerator != null)
-                if (GUI.Button(new Rect(50, 50, 300, 100), "Merge"))
-                {
-                    if (enumerator.MoveNext())
+            var rect = new Rect(50, 50, 300, 100);
+
+            if (!ShouldMerge)
+            {
+                if (enumeratorOfMerge != null)
+                    if (GUI.Button(rect, "单步执行合并节点"))
+                    {
+                        if (enumeratorOfMerge.MoveNext())
+                            DrawNodes();
+                        else
+                            enumeratorOfMerge = null;
+                    }
+
+                rect.y += 120;
+                if (enumeratorOfMerge != null)
+                    if (GUI.Button(rect, "合并节点"))
+                    {
+                        while (enumeratorOfMerge.MoveNext())
+                        {
+                        }
+                        enumeratorOfMerge = null;
                         DrawNodes();
+                    }
+            }
+
+            if (!solved)
+            {
+                rect.y += 120;
+                if (GUI.Button(rect, "单步求解"))
+                {
+                    if (coroutineOfSolve != null)
+                        return;
+
+                    if (enumeratorOfSolve == null)
+                        enumeratorOfSolve = graph.RunAsync();
+
+                    if (enumeratorOfSolve.MoveNext())
+                    {
+                        var state = enumeratorOfSolve.Current as State;
+                        DrawSolution(state);
+                    }
                     else
-                        enumerator = null;
+                    {
+                        solved = true;
+                        enumeratorOfSolve = null;
+                    }
                 }
+
+                rect.y += 120;
+                if (GUI.Button(rect, "连续求解"))
+                {
+                    if (enumeratorOfSolve != null)
+                        return;
+
+                    coroutineOfSolve = StartCoroutine(SolveAsync());
+                }
+            }
+        }
+
+        private IEnumerator SolveAsync()
+        {
+            enumeratorOfSolve = graph.RunAsync();
+            while (enumeratorOfSolve.MoveNext())
+            {
+                var state = enumeratorOfSolve.Current as State;
+                DrawSolution(state);
+                yield return null;
+            }
+
+            solved = true;
+            enumeratorOfSolve = null;
+        }
+
+        private void DrawSolution(State state)
+        {
+            for (int i = 0; i < NodeRoot.childCount; i++)
+                Destroy(NodeRoot.GetChild(i).gameObject);
+
+            foreach (var node in graph.list)
+                DrawNode(node);
+
+            // 描绘队列中的State
+            int nodesCount = graph.list.Count;
+            var visitedNodes = new List<Node>();
+            for (int i = 0; i < nodesCount; i++)
+            {
+                bool visited = state.visited[i];
+                if(visited)
+                    visitedNodes.Add(graph.list[i]);
+            }
+
+            // 对所有访问过的几点加遮罩
+            foreach (var visitedNode in visitedNodes)
+                DrawNodeMask(visitedNode);
         }
 
         /// <summary>
@@ -311,13 +409,14 @@ namespace Gempoll.Visualization
         /// </summary>
         private void DrawNodes()
         {
-            for (int i = 0; i < NodeRoot.childCount; i++) Destroy(NodeRoot.GetChild(i).gameObject);
+            for (int i = 0; i < NodeRoot.childCount; i++)
+                Destroy(NodeRoot.GetChild(i).gameObject);
 
             foreach (var node in graph.list)
             {
                 DrawNode(node);
 
-                if (enumerator != null && enumerator.Current == node)
+                if (enumeratorOfMerge != null && enumeratorOfMerge.Current == node)
                     DrawNodeMask(node);
             }
         }

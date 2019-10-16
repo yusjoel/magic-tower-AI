@@ -416,6 +416,58 @@ namespace Gempoll
             }
         }
 
+        public IEnumerator RunAsync()
+        {
+            var state = new State(this, list[0]);
+            State answer = null;
+
+            var set = new HashSet<long>();
+            var map = new Dictionary<long, int>();
+
+            var queue = new PriorityQueue<State>(State.GetComparer());
+
+            int stateId = 1;
+
+            queue.Enqueue(state);
+
+            while (queue.Count > 0)
+            {
+                state = queue.Dequeue();
+                yield return state;
+
+                if (!set.Add(state.hash()))
+                    continue;
+
+                if (state.shouldStop())
+                {
+                    if (answer == null || answer.getScore() < state.getScore())
+                        answer = state;
+                    continue;
+                }
+
+                // extend
+                foreach (var node in state.current.linked)
+                {
+                    // visited
+                    if (state.visited[node.id]) continue;
+
+                    // extend
+                    var another = new State(state).merge(node);
+                    if (another == null) continue;
+
+                    long hash = another.hash();
+                    int score;
+                    if (!map.TryGetValue(hash, out score))
+                        score = -1;
+                    if (score > another.getScore()) continue;
+
+                    map[hash] = another.getScore();
+                    another.Id = stateId++;
+                    queue.Enqueue(another);
+                }
+            }
+        }
+
         public State run()
         {
             var state = new State(this, list[0]);
