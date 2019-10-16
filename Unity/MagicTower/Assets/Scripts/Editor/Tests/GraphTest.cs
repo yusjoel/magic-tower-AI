@@ -120,7 +120,7 @@ namespace Gempoll.Editor.Tests
                 }
                 else
                 {
-                    foreach (string s in answer.route)
+                    foreach (string s in answer.Route)
                     {
                         stringBuilder.AppendLine(s);
                     }

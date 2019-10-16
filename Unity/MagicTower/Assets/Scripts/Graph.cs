@@ -411,8 +411,8 @@ namespace Gempoll
             for (int i = 0; i < array.Length; i++)
             {
                 var state = array[i];
-                TestContext.Out.WriteLine("{0}, id: {1}, cnt: {2}, score: {3}", i, state.Id, state.cnt,
-                    state.getScore());
+                TestContext.Out.WriteLine("{0}, id: {1}, cnt: {2}, score: {3}", i, state.Id, state.Count,
+                    state.GetScore());
             }
         }
 
@@ -435,33 +435,33 @@ namespace Gempoll
                 state = queue.Dequeue();
                 yield return state;
 
-                if (!set.Add(state.hash()))
+                if (!set.Add(state.Hash()))
                     continue;
 
-                if (state.shouldStop())
+                if (state.ShouldStop())
                 {
-                    if (answer == null || answer.getScore() < state.getScore())
+                    if (answer == null || answer.GetScore() < state.GetScore())
                         answer = state;
                     continue;
                 }
 
                 // extend
-                foreach (var node in state.current.LinkedNodes)
+                foreach (var node in state.Current.LinkedNodes)
                 {
                     // visited
-                    if (state.visited[node.Id]) continue;
+                    if (state.VisitedNodes[node.Id]) continue;
 
                     // extend
-                    var another = new State(state).merge(node);
+                    var another = new State(state).Merge(node);
                     if (another == null) continue;
 
-                    long hash = another.hash();
+                    long hash = another.Hash();
                     int score;
                     if (!map.TryGetValue(hash, out score))
                         score = -1;
-                    if (score > another.getScore()) continue;
+                    if (score > another.GetScore()) continue;
 
-                    map[hash] = another.getScore();
+                    map[hash] = another.GetScore();
                     another.Id = stateId++;
                     queue.Enqueue(another);
                 }
@@ -497,33 +497,33 @@ namespace Gempoll
                 //    break;
                 //Console.WriteLine("Poll: {0}, Cnt {1}, Score {2}", state.current, state.cnt, state.GetScore());
 
-                if (!set.Add(state.hash())) continue;
+                if (!set.Add(state.Hash())) continue;
 
-                if (state.shouldStop())
+                if (state.ShouldStop())
                 {
-                    if (answer == null || answer.getScore() < state.getScore())
+                    if (answer == null || answer.GetScore() < state.GetScore())
                         answer = state;
                     solutions++;
                     continue;
                 }
 
                 // extend
-                foreach (var node in state.current.LinkedNodes)
+                foreach (var node in state.Current.LinkedNodes)
                 {
                     // visited
-                    if (state.visited[node.Id]) continue;
+                    if (state.VisitedNodes[node.Id]) continue;
 
                     // extend
-                    var another = new State(state).merge(node);
+                    var another = new State(state).Merge(node);
                     if (another == null) continue;
 
-                    long hash = another.hash();
+                    long hash = another.Hash();
                     int score;
                     if (!map.TryGetValue(hash, out score))
                         score = -1;
-                    if (score > another.getScore()) continue;
+                    if (score > another.GetScore()) continue;
 
-                    map[hash] = another.getScore();
+                    map[hash] = another.GetScore();
                     another.Id = stateId++;
                     queue.Enqueue(another);
 

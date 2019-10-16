@@ -396,7 +396,7 @@ namespace Gempoll.Visualization
             var visitedNodes = new List<Node>();
             for (int i = 0; i < nodesCount; i++)
             {
-                bool visited = state.visited[i];
+                bool visited = state.VisitedNodes[i];
                 if (visited)
                     visitedNodes.Add(graph.list[i]);
             }

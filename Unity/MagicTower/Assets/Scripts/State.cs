@@ -3,136 +3,175 @@ using System.Collections.Generic;
 
 namespace Gempoll
 {
+    /// <summary>
+    ///     状态
+    /// </summary>
     public class State
     {
         private static readonly Comparer comparer = new Comparer();
 
-        public static readonly int STOP_COUNT = 45;
+        public static readonly int StopCount = 45;
+
+        /// <summary>
+        ///     路径
+        /// </summary>
+        public readonly List<string> Route;
 
         private readonly Graph graph;
 
-        public readonly List<string> route;
+        public int Count;
 
-        public int cnt;
-
-        public Node current;
+        /// <summary>
+        ///     英雄节点
+        /// </summary>
+        public Node Current;
 
         public int Id;
 
+        /// <summary>
+        ///     访问过的节点
+        /// </summary>
+        public bool[] VisitedNodes;
+
+        /// <summary>
+        ///     使用商店的次数, -1代表还没有访问过商店
+        /// </summary>
         private int shopTime;
 
-        public bool[] visited;
-
-        public State(Graph _graph, Node node)
+        public State(Graph graph, Node node)
         {
-            graph = _graph;
-            current = node;
-            cnt = 0;
-            visited = new bool[graph.list.Count];
-            visited[current.Id] = true;
-            route = new List<string>();
-            route.Add(current.ToString());
+            this.graph = graph;
+            Current = node;
+            Count = 0;
+            VisitedNodes = new bool[this.graph.list.Count];
+            VisitedNodes[Current.Id] = true;
+            Route = new List<string> { Current.ToString() };
             shopTime = -1;
-            eatItem();
+            EatItem();
         }
 
         public State(State another)
         {
             graph = another.graph;
-            current = another.current;
-            visited = another.visited.Clone() as bool[];
-            route = new List<string>(another.route);
+            Current = another.Current;
+            VisitedNodes = another.VisitedNodes.Clone() as bool[];
+            Route = new List<string>(another.Route);
             shopTime = another.shopTime;
-            cnt = another.cnt;
+            Count = another.Count;
         }
 
         /// <summary>
         ///     尽可能吃掉周边宝物
         /// </summary>
-        public void eatItem()
+        public void EatItem()
         {
             bool has = true;
             while (has)
             {
                 has = false;
-                foreach (var node in current.LinkedNodes)
+                foreach (var node in Current.LinkedNodes)
                 {
-                    if (visited[node.Id]) continue;
-                    if (!node.ShouldEat(graph.shouldEat ? current.Hero : null)) continue;
+                    if (VisitedNodes[node.Id]) continue;
+                    if (!node.ShouldEat(graph.shouldEat ? Current.Hero : null)) continue;
 
                     has = true;
-                    current = current.Merge(node, visited);
+                    Current = Current.Merge(node, VisitedNodes);
                     if (node.Item != null && (node.Item.Special & 1) != 0)
                         shopTime = Math.Max(shopTime, 0);
-                    visit(node);
+                    Visit(node);
                     break;
                 }
             }
             // Use shop
-            while (graph.shop.Buy(current.Hero, shopTime))
+            while (graph.shop.Buy(Current.Hero, shopTime))
                 shopTime++;
         }
 
+        /// <summary>
+        ///     比较器
+        /// </summary>
+        /// <returns></returns>
         public static Comparer GetComparer()
         {
             return comparer;
         }
 
-        public int getScore()
+        /// <summary>
+        ///     评估函数
+        /// </summary>
+        /// <returns></returns>
+        public int GetScore()
         {
-            return current.GetScore();
+            return Current.GetScore();
         }
 
-        public long hash()
+        public long Hash()
         {
+            // TODO: 点数无法超过long的位数, 也就是64个
             long val = 0;
             int i = 0;
             foreach (var node in graph.list)
             {
                 if (node.Doors.Count == 0 && node.Monsters.Count == 0) continue;
 
-                if (visited[node.Id]) val |= 1L << i;
+                if (VisitedNodes[node.Id]) val |= 1L << i;
                 i++;
             }
             return val;
         }
 
-        public State merge(Node node)
+        /// <summary>
+        ///     合并节点
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public State Merge(Node node)
         {
-            if (visited[node.Id] || !current.LinkedNodes.Contains(node))
+            if (VisitedNodes[node.Id] || !Current.LinkedNodes.Contains(node))
                 return null;
 
-            var another = current.Merge(node, visited);
+            var another = Current.Merge(node, VisitedNodes);
             if (another == null) return null;
 
-            current = another;
-            visit(node);
-            route.Add(current.ToString());
-            eatItem();
-            cnt++;
+            Current = another;
+            Visit(node);
+            Route.Add(Current.ToString());
+            EatItem();
+            Count++;
             return this;
         }
 
-        public bool shouldStop()
+        /// <summary>
+        ///     是否要结束遍历
+        /// </summary>
+        /// <returns></returns>
+        public bool ShouldStop()
         {
-            if (cnt > STOP_COUNT) return true;
+            // TODO: 为什么不能访问节点数超过45?
+            if (Count > StopCount)
+                return true;
 
             // Boss被打死？
-            if (graph.bossId >= 0 && visited[graph.bossId]) return true;
+            if (graph.bossId >= 0 && VisitedNodes[graph.bossId])
+                return true;
 
             return false;
         }
 
-        public void visit(Node node)
+        // TODO: 放到Node.Merge()中, 并且可以把Merge改成Visit
+        public void Visit(Node node)
         {
-            if (!visited[node.Id] && current.LinkedNodes.Remove(node))
+            if (!VisitedNodes[node.Id] && Current.LinkedNodes.Remove(node))
             {
                 foreach (var monster in node.Monsters)
-                    current.Hero.Money += monster.Money;
-                visited[node.Id] = true;
+                    Current.Hero.Money += monster.Money;
+                VisitedNodes[node.Id] = true;
             }
         }
 
+        /// <summary>
+        ///     状态的比较类, 用于<see cref="Medallion.Collections.PriorityQueue{T}" />
+        /// </summary>
         public class Comparer : IComparer<State>
         {
             public int Compare(State o1, State o2)
@@ -143,9 +182,9 @@ namespace Gempoll
                 if (o2 == null)
                     throw new ArgumentNullException(nameof(o2));
 
-                if (o1.cnt == o2.cnt) return o2.getScore() - o1.getScore();
+                if (o1.Count == o2.Count) return o2.GetScore() - o1.GetScore();
 
-                return o1.cnt - o2.cnt;
+                return o1.Count - o2.Count;
             }
         }
     }
