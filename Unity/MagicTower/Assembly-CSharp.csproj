@@ -67,7 +67,7 @@
     <Compile Include="Assets\Scripts\Scanner.cs" />
     <Compile Include="Assets\Scripts\Shop.cs" />
     <Compile Include="Assets\Scripts\State.cs" />
-    <Compile Include="Assets\Scripts\Util.cs" />
+    <Compile Include="Assets\Scripts\Utility.cs" />
     <Compile Include="Assets\Scripts\Visualization\Door.cs" />
     <Compile Include="Assets\Scripts\Visualization\DoorType.cs" />
     <Compile Include="Assets\Scripts\Visualization\GraphDrawer.cs" />

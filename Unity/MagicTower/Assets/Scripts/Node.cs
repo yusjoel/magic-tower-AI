@@ -161,7 +161,7 @@ namespace Gempoll
 
             // beat monsters...
             foreach (var monster in another.Monsters)
-                node.Hero.HitPoint -= Util.getDamage(node.Hero, monster);
+                node.Hero.HitPoint -= Utility.GetDamage(node.Hero, monster);
 
             if (!node.Hero.IsValid())
                 return null;
@@ -245,7 +245,7 @@ namespace Gempoll
 
             // 所有的怪物, 如果有伤害, 不吃
             foreach (var monster in Monsters)
-                if (Util.getDamage(hero, monster) != 0)
+                if (Utility.GetDamage(hero, monster) != 0)
                     return false;
 
             // 反之吃掉
