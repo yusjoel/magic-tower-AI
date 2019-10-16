@@ -78,6 +78,8 @@ namespace Gempoll.Visualization
         /// </summary>
         public GameObject ShopPrefab;
 
+        public bool ShouldEat;
+
         public bool ShouldMerge;
 
         /// <summary>
@@ -100,6 +102,8 @@ namespace Gempoll.Visualization
         /// </summary>
         public GameObject WallPrefab;
 
+        private Coroutine coroutineOfSolve;
+
         /// <summary>
         ///     合并操作的枚举器
         /// </summary>
@@ -121,8 +125,6 @@ namespace Gempoll.Visualization
         private Graph graph;
 
         private bool solved;
-
-        private Coroutine coroutineOfSolve;
 
         /// <summary>
         ///     描绘当前楼层
@@ -288,7 +290,7 @@ namespace Gempoll.Visualization
             using (var fileStream = File.OpenRead(mapPath))
             {
                 var scanner = new Scanner(fileStream);
-                graph = new Graph(scanner, shouldMerge, false);
+                graph = new Graph(scanner, shouldMerge, ShouldEat);
             }
         }
 
@@ -395,7 +397,7 @@ namespace Gempoll.Visualization
             for (int i = 0; i < nodesCount; i++)
             {
                 bool visited = state.visited[i];
-                if(visited)
+                if (visited)
                     visitedNodes.Add(graph.list[i]);
             }
 
