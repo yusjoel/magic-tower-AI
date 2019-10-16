@@ -63,6 +63,7 @@
 
         public bool IsValid()
         {
+            // TODO: 为什么钥匙没了就结束了?
             return HitPoint > 0 && YellowKeyCount >= 0 && BlueKeyCount >= 0 && RedKeyCount >= 0 && GreenKeyCount >= 0;
         }
 

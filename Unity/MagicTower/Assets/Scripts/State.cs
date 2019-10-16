@@ -29,7 +29,7 @@ namespace Gempoll
             current = node;
             cnt = 0;
             visited = new bool[graph.list.Count];
-            visited[current.id] = true;
+            visited[current.Id] = true;
             route = new List<string>();
             route.Add(current.ToString());
             shopTime = -1;
@@ -55,21 +55,21 @@ namespace Gempoll
             while (has)
             {
                 has = false;
-                foreach (var node in current.linked)
+                foreach (var node in current.LinkedNodes)
                 {
-                    if (visited[node.id]) continue;
-                    if (!node.shouldEat(graph.shouldEat ? current.hero : null)) continue;
+                    if (visited[node.Id]) continue;
+                    if (!node.ShouldEat(graph.shouldEat ? current.Hero : null)) continue;
 
                     has = true;
-                    current = current.merge(node, visited);
-                    if (node.item != null && (node.item.Special & 1) != 0)
+                    current = current.Merge(node, visited);
+                    if (node.Item != null && (node.Item.Special & 1) != 0)
                         shopTime = Math.Max(shopTime, 0);
                     visit(node);
                     break;
                 }
             }
             // Use shop
-            while (graph.shop.useShop(current.hero, shopTime))
+            while (graph.shop.useShop(current.Hero, shopTime))
                 shopTime++;
         }
 
@@ -80,7 +80,7 @@ namespace Gempoll
 
         public int getScore()
         {
-            return current.getScore();
+            return current.GetScore();
         }
 
         public long hash()
@@ -89,9 +89,9 @@ namespace Gempoll
             int i = 0;
             foreach (var node in graph.list)
             {
-                if (node.doors.Count == 0 && node.monsters.Count == 0) continue;
+                if (node.Doors.Count == 0 && node.Monsters.Count == 0) continue;
 
-                if (visited[node.id]) val |= 1L << i;
+                if (visited[node.Id]) val |= 1L << i;
                 i++;
             }
             return val;
@@ -99,10 +99,10 @@ namespace Gempoll
 
         public State merge(Node node)
         {
-            if (visited[node.id] || !current.linked.Contains(node))
+            if (visited[node.Id] || !current.LinkedNodes.Contains(node))
                 return null;
 
-            var another = current.merge(node, visited);
+            var another = current.Merge(node, visited);
             if (another == null) return null;
 
             current = another;
@@ -125,11 +125,11 @@ namespace Gempoll
 
         public void visit(Node node)
         {
-            if (!visited[node.id] && current.linked.Remove(node))
+            if (!visited[node.Id] && current.LinkedNodes.Remove(node))
             {
-                foreach (var monster in node.monsters)
-                    current.hero.Money += monster.Money;
-                visited[node.id] = true;
+                foreach (var monster in node.Monsters)
+                    current.Hero.Money += monster.Money;
+                visited[node.Id] = true;
             }
         }
 

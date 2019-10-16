@@ -44,9 +44,9 @@ namespace Gempoll.Editor.Tests
                 Assert.AreEqual(11, graph.columnCount);
 
                 // 最后的3个数据
-                Assert.AreEqual(0, graph.heroNode.f);
-                Assert.AreEqual(0, graph.heroNode.x);
-                Assert.AreEqual(5, graph.heroNode.y);
+                Assert.AreEqual(0, graph.heroNode.Floor);
+                Assert.AreEqual(0, graph.heroNode.X);
+                Assert.AreEqual(5, graph.heroNode.Y);
 
                 // 应该正好读完
                 Assert.Throws<IndexOutOfRangeException>(() =>
@@ -153,7 +153,7 @@ namespace Gempoll.Editor.Tests
                 foreach (var node in graph.list)
                 {
                     stringBuilder.AppendLine(node.ToString());
-                    if (node.doors.Count > 0 || node.monsters.Count > 0)
+                    if (node.Doors.Count > 0 || node.Monsters.Count > 0)
                         valid++;
                 }
 

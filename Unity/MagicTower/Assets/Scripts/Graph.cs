@@ -178,7 +178,7 @@ namespace Gempoll
             int y = scanner.NextInt();
 
             hero = new Hero(hp, atk, def, mdef, money, yellow, blue, red, 0);
-            heroNode = new Node(0, floor, x, y).setHero(hero);
+            heroNode = new Node(0, floor, x, y).SetHero(hero);
 
             this.shouldMerge = shouldMerge;
             this.shouldEat = shouldEat;
@@ -196,8 +196,8 @@ namespace Gempoll
             // set id
             for (int i = 0; i < list.Count; i++)
             {
-                list[i].setId(i);
-                if (list[i].type == BOSS_INDEX)
+                list[i].SetId(i);
+                if (list[i].ObjectId == BOSS_INDEX)
                     bossId = i;
             }
         }
@@ -220,48 +220,48 @@ namespace Gempoll
                     stair[i][3] = k;
                 }
                 if (map[i, j, k] == YELLOW_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetYellowKeyCount(1));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetYellowKeyCount(1));
                 if (map[i, j, k] == BLUE_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetBlueKeyCount(1));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetBlueKeyCount(1));
                 if (map[i, j, k] == RED_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetRedKeyCount(1));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetRedKeyCount(1));
                 if (map[i, j, k] == GREEN_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetGreenKeyCount(1));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetGreenKeyCount(1));
                 if (map[i, j, k] == RED_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetAttack(p_atk));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetAttack(p_atk));
                 if (map[i, j, k] == BLUE_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetDefense(p_def));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetDefense(p_def));
                 if (map[i, j, k] == GREEN_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetMagicDefense(p_mdef));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetMagicDefense(p_mdef));
                 if (map[i, j, k] == RED_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_red));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_red));
                 if (map[i, j, k] == BLUE_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_blue));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_blue));
                 if (map[i, j, k] == YELLOW_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_yellow));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_yellow));
                 if (map[i, j, k] == GREEN_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_green));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(p_green));
                 if (map[i, j, k] == SWORD)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetAttack(p_sword));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetAttack(p_sword));
                 if (map[i, j, k] == SHIELD)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetDefense(p_shield));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetDefense(p_shield));
                 if (map[i, j, k] == SHOP)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetSpecial(1));
+                    node = new Node(map[i, j, k], i, j, k).SetItem(new Item().SetSpecial(1));
 
                 if (map[i, j, k] == DOOR_YELLOW)
-                    node = new Node(map[i, j, k], i, j, k).setDoor(1);
+                    node = new Node(map[i, j, k], i, j, k).SetDoor(1);
                 if (map[i, j, k] == DOOR_BLUE)
-                    node = new Node(map[i, j, k], i, j, k).setDoor(2);
+                    node = new Node(map[i, j, k], i, j, k).SetDoor(2);
                 if (map[i, j, k] == DOOR_RED)
-                    node = new Node(map[i, j, k], i, j, k).setDoor(3);
+                    node = new Node(map[i, j, k], i, j, k).SetDoor(3);
                 if (map[i, j, k] == DOOR_GREEN)
-                    node = new Node(map[i, j, k], i, j, k).setDoor(4);
+                    node = new Node(map[i, j, k], i, j, k).SetDoor(4);
                 if (map[i, j, k] >= MONSTER_BOUND)
                 {
                     var monster = monsterMap[map[i, j, k]];
                     if (monster == null) continue;
 
-                    node = new Node(map[i, j, k], i, j, k).setMonster(monster);
+                    node = new Node(map[i, j, k], i, j, k).SetMonster(monster);
                 }
 
                 if (node != null)
@@ -275,22 +275,22 @@ namespace Gempoll
             {
                 var n1 = list[i];
                 var n2 = list[j];
-                if (isLinked(n1.f, n1.x, n1.y, n2.f, n2.x, n2.y))
+                if (isLinked(n1.Floor, n1.X, n1.Y, n2.Floor, n2.X, n2.Y))
                 {
-                    n1.addNode(n2);
-                    n2.addNode(n1);
+                    n1.Link(n2);
+                    n2.Link(n1);
                 }
             }
         }
 
         private bool Check(Node u, Node v)
         {
-            foreach (var x in u.linked)
-            foreach (var y in u.linked)
+            foreach (var x in u.LinkedNodes)
+            foreach (var y in u.LinkedNodes)
             {
                 if (x == y || x == v || y == v) continue;
 
-                if (!x.linked.Contains(y) || !y.linked.Contains(x)) return false;
+                if (!x.LinkedNodes.Contains(y) || !y.LinkedNodes.Contains(x)) return false;
             }
             return true;
         }
@@ -360,7 +360,7 @@ namespace Gempoll
                     var n2 = list[j];
                     if (ShouldMerge(n1, n2))
                     {
-                        n1.merge(n2);
+                        n1.Merge(n2);
                         list.RemoveAt(j);
                         mergeNode();
                         return;
@@ -381,7 +381,7 @@ namespace Gempoll
                     var n2 = list[j];
                     if (ShouldMerge(n1, n2))
                     {
-                        n1.merge(n2);
+                        n1.Merge(n2);
                         list.RemoveAt(j);
                         merged = true;
                         break;
@@ -446,10 +446,10 @@ namespace Gempoll
                 }
 
                 // extend
-                foreach (var node in state.current.linked)
+                foreach (var node in state.current.LinkedNodes)
                 {
                     // visited
-                    if (state.visited[node.id]) continue;
+                    if (state.visited[node.Id]) continue;
 
                     // extend
                     var another = new State(state).merge(node);
@@ -508,10 +508,10 @@ namespace Gempoll
                 }
 
                 // extend
-                foreach (var node in state.current.linked)
+                foreach (var node in state.current.LinkedNodes)
                 {
                     // visited
-                    if (state.visited[node.id]) continue;
+                    if (state.visited[node.Id]) continue;
 
                     // extend
                     var another = new State(state).merge(node);
@@ -560,24 +560,24 @@ namespace Gempoll
             // https://ckcz123.com/blog/posts/magic-tower-ai-ii/
 
             // 1. 如果这两个节点不相连，则不合并。
-            if (!n1.linked.Contains(n2) || !n2.linked.Contains(n1))
+            if (!n1.LinkedNodes.Contains(n2) || !n2.LinkedNodes.Contains(n1))
                 return false;
 
             // 2. 如果这两个节点都是宝物节点，则直接合并。
-            if (n1.item != null && n2.item != null)
+            if (n1.Item != null && n2.Item != null)
                 return true;
 
             // 3. 如果一个是宝物节点，另一个是消耗节点，则不合并。
-            if (n1.item != null || n2.item != null)
+            if (n1.Item != null || n2.Item != null)
                 return false;
 
             // 任意一个是Boss节点, 不能合并
-            if (n1.type == BOSS_INDEX || n2.type == BOSS_INDEX)
+            if (n1.ObjectId == BOSS_INDEX || n2.ObjectId == BOSS_INDEX)
                 return false;
 
             // 4. 如果都是消耗节点，且存在第三个节点同时和这两个节点相连，则不合并
-            foreach (var node in n2.linked)
-                if (n1.linked.Contains(node))
+            foreach (var node in n2.LinkedNodes)
+                if (n1.LinkedNodes.Contains(node))
                     return false;
 
             // 5. 如果都是消耗节点，且其中某个节点相连的其他所有节点，不是两两相连，则不合并。

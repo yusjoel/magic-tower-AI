@@ -194,12 +194,12 @@ namespace Gempoll.Visualization
             }
 
             var heroNode = graph.heroNode;
-            if (heroNode.f == floor)
+            if (heroNode.Floor == floor)
             {
                 var go = Instantiate(HeroPrefab, transform);
                 go.SetActive(true);
                 var t = go.GetComponent<RectTransform>();
-                t.anchoredPosition = CalculatePosition(heroNode.x, heroNode.y);
+                t.anchoredPosition = CalculatePosition(heroNode.X, heroNode.Y);
             }
         }
 
@@ -435,7 +435,7 @@ namespace Gempoll.Visualization
                 var go = Instantiate(MaskPrefab, NodeRoot);
                 go.SetActive(true);
                 var t = go.GetComponent<RectTransform>();
-                t.anchoredPosition = CalculatePosition(n.x, n.y);
+                t.anchoredPosition = CalculatePosition(n.X, n.Y);
             }
         }
 
@@ -449,21 +449,21 @@ namespace Gempoll.Visualization
 
             foreach (var n in nodes)
             {
-                bool foundTopNode = nodes.Any(n2 => n2.x == n.x && n2.y == n.y + 1);
+                bool foundTopNode = nodes.Any(n2 => n2.X == n.X && n2.Y == n.Y + 1);
                 if (!foundTopNode)
-                    CreateLine(n.x, n.y, LinePosition.Top);
+                    CreateLine(n.X, n.Y, LinePosition.Top);
 
-                bool foundBottomNode = nodes.Any(n2 => n2.x == n.x && n2.y == n.y - 1);
+                bool foundBottomNode = nodes.Any(n2 => n2.X == n.X && n2.Y == n.Y - 1);
                 if (!foundBottomNode)
-                    CreateLine(n.x, n.y, LinePosition.Bottom);
+                    CreateLine(n.X, n.Y, LinePosition.Bottom);
 
-                bool foundLeftNode = nodes.Any(n2 => n2.x == n.x - 1 && n2.y == n.y);
+                bool foundLeftNode = nodes.Any(n2 => n2.X == n.X - 1 && n2.Y == n.Y);
                 if (!foundLeftNode)
-                    CreateLine(n.x, n.y, LinePosition.Left);
+                    CreateLine(n.X, n.Y, LinePosition.Left);
 
-                bool foundRightNode = nodes.Any(n2 => n2.x == n.x + 1 && n2.y == n.y);
+                bool foundRightNode = nodes.Any(n2 => n2.X == n.X + 1 && n2.Y == n.Y);
                 if (!foundRightNode)
-                    CreateLine(n.x, n.y, LinePosition.Right);
+                    CreateLine(n.X, n.Y, LinePosition.Right);
             }
         }
 

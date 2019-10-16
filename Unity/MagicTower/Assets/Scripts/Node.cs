@@ -3,34 +3,50 @@ using System.Text;
 
 namespace Gempoll
 {
+    /// <summary>
+    ///     节点
+    /// </summary>
     public class Node
     {
         /// <summary>
         ///     包含的门列表
         /// </summary>
-        public readonly List<int> doors;
+        public readonly List<int> Doors;
+
+        /// <summary>
+        ///     起始节点所在楼层
+        /// </summary>
+        public readonly int Floor;
 
         /// <summary>
         ///     包含的怪物列表
         /// </summary>
-        public readonly List<Monster> monsters;
+        public readonly List<Monster> Monsters;
 
         /// <summary>
-        ///     楼层
+        ///     起始节点所在位置X坐标
         /// </summary>
-        public int f;
+        public readonly int X;
 
-        public Hero hero;
+        /// <summary>
+        ///     起始节点所在位置Y坐标
+        /// </summary>
+        public readonly int Y;
+
+        /// <summary>
+        ///     英雄
+        /// </summary>
+        public Hero Hero;
 
         /// <summary>
         ///     节点的ID
         /// </summary>
-        public int id;
+        public int Id;
 
         /// <summary>
-        ///     包含的道具
+        ///     包含的道具, null表示没有
         /// </summary>
-        public Item item;
+        public Item Item;
 
         // HashSet本身是无序的, 不同的实现会造成遍历时的结果不同
         // JDK的不同都会造成遍历结果不同, 更何况是Java和C#的区别
@@ -42,109 +58,128 @@ namespace Gempoll
         /// <summary>
         ///     邻接表记录所有相邻节点
         /// </summary>
-        public LinkedHashSet<Node> linked;
+        public LinkedHashSet<Node> LinkedNodes;
 
+        /// <summary>
+        ///     合并掉的节点
+        /// </summary>
         public List<Node> MergedNodes;
 
         /// <summary>
-        ///     节点的类型
+        ///     起始节点的物件编号(如道具编号, 怪物编号)
         /// </summary>
-        public int type;
+        public int ObjectId;
 
-        /// <summary>
-        ///     x
-        /// </summary>
-        public int x;
-
-        /// <summary>
-        ///     y
-        /// </summary>
-        public int y;
-
-        public Node(int type, int floor, int x, int y)
+        public Node(int objectId, int floor, int x, int y)
         {
-            this.type = type;
-            f = floor;
-            this.x = x;
-            this.y = y;
-            hero = null;
-            item = null;
-            monsters = new List<Monster>();
-            doors = new List<int>();
-            linked = new LinkedHashSet<Node>();
+            ObjectId = objectId;
+            Floor = floor;
+            X = x;
+            Y = y;
+            Hero = null;
+            Item = null;
+            Monsters = new List<Monster>();
+            Doors = new List<int>();
+            LinkedNodes = new LinkedHashSet<Node>();
             MergedNodes = new List<Node>();
         }
 
-        public void addNode(Node another)
+        /// <summary>
+        ///     连接新的节点
+        /// </summary>
+        /// <param name="another"></param>
+        public void Link(Node another)
         {
-            linked.Add(another);
+            LinkedNodes.Add(another);
         }
 
         public override int GetHashCode()
         {
-            return 1000000 * f + 1000 * x + y;
+            return 1000000 * Floor + 1000 * X + Y;
         }
 
-        public int getScore()
+        /// <summary>
+        ///     评估函数
+        /// </summary>
+        /// <returns></returns>
+        public int GetScore()
         {
-            return hero == null ? 0 : hero.GetScore();
+            return Hero?.GetScore() ?? 0;
         }
 
-        public void merge(Node another)
+        /// <summary>
+        ///     用于简化图结构的合并节点
+        /// </summary>
+        /// <param name="another"></param>
+        public void Merge(Node another)
         {
             // merge items...
-            if (item != null) item.Merge(another.item);
+            // TODO: 这里吃掉了合并的道具
+            if (Item != null) Item.Merge(another.Item);
 
             // merge doors...
-            doors.AddRange(another.doors);
+            Doors.AddRange(another.Doors);
             // merge monsters...
-            monsters.AddRange(another.monsters);
+            Monsters.AddRange(another.Monsters);
 
             // merge nodes
-            foreach (var to in another.linked)
+            foreach (var to in another.LinkedNodes)
             {
                 if (to != this)
                 {
-                    linked.Add(to);
-                    to.addNode(this);
+                    LinkedNodes.Add(to);
+                    to.Link(this);
                 }
-                to.linked.Remove(another);
+                to.LinkedNodes.Remove(another);
             }
 
             MergedNodes.Add(another);
         }
 
-        public Node merge(Node another, bool[] visited)
+        /// <summary>
+        ///     用于求解的合并节点
+        /// </summary>
+        /// <param name="another"></param>
+        /// <param name="visited"></param>
+        /// <returns></returns>
+        public Node Merge(Node another, bool[] visited)
         {
-            var node = new Node(type, another.f, another.x, another.y).setHero(new Hero(hero));
-            node.linked = new LinkedHashSet<Node>(linked);
+            var node = new Node(ObjectId, another.Floor, another.X, another.Y).SetHero(new Hero(Hero));
+            node.LinkedNodes = new LinkedHashSet<Node>(LinkedNodes);
 
             // get item
-            if (another.item != null)
-                node.hero.GetItem(another.item);
+            if (another.Item != null)
+                node.Hero.GetItem(another.Item);
 
             // open doors...
-            foreach (int v in another.doors)
+            foreach (int door in another.Doors)
             {
-                if (v == 1) node.hero.YellowKeyCount--;
-                if (v == 2) node.hero.BlueKeyCount--;
-                if (v == 3) node.hero.RedKeyCount--;
+                if (door == 1) node.Hero.YellowKeyCount--;
+                if (door == 2) node.Hero.BlueKeyCount--;
+                if (door == 3) node.Hero.RedKeyCount--;
             }
 
             // beat monsters...
-            foreach (var monster in another.monsters) node.hero.HitPoint -= Util.getDamage(node.hero, monster);
+            foreach (var monster in another.Monsters)
+                node.Hero.HitPoint -= Util.getDamage(node.Hero, monster);
 
-            if (!node.hero.IsValid())
+            if (!node.Hero.IsValid())
                 return null;
 
             // merge linked nodes
-            foreach (var to in another.linked)
-                if (!visited[to.id])
-                    node.addNode(to);
+            foreach (var to in another.LinkedNodes)
+                if (!visited[to.Id])
+                    node.Link(to);
 
             return node;
         }
 
+        /// <summary>
+        ///     模拟java的list.toString()
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
         private string Serialize<T>(List<T> list)
         {
             var stringBuilder = new StringBuilder();
@@ -160,63 +195,75 @@ namespace Gempoll
             return stringBuilder.ToString();
         }
 
-        public Node setDoor(int door)
+        public Node SetDoor(int door)
         {
-            doors.Add(door);
+            Doors.Add(door);
             return this;
         }
 
-        public Node setHero(Hero hero)
+        public Node SetHero(Hero hero)
         {
-            this.hero = hero;
+            Hero = hero;
             return this;
         }
 
-        public void setId(int id)
+        public void SetId(int id)
         {
-            this.id = id;
+            Id = id;
         }
 
-        public Node setItem(Item item)
+        public Node SetItem(Item item)
         {
-            this.item = item;
+            Item = item;
             return this;
         }
 
-        public Node setMonster(Monster monster)
+        public Node SetMonster(Monster monster)
         {
-            monsters.Add(monster);
+            Monsters.Add(monster);
             return this;
         }
 
-        public bool shouldEat(Hero hero)
+        /// <summary>
+        ///     是否可以直接吃掉
+        /// </summary>
+        /// <param name="hero"></param>
+        /// <returns></returns>
+        public bool ShouldEat(Hero hero)
         {
-            if (item != null) return true;
+            // 道具, 总是吃掉
+            if (Item != null) return true;
+
+            // hero == null 相当于Graph.ShouldEat设置为false
             if (hero == null) return false;
 
-            // 无伤怪物直接干掉
-            if (doors.Count > 0) return false;
-            if (monsters.Count == 0) return false;
+            // 有门, 不吃
+            if (Doors.Count > 0) return false;
 
-            foreach (var monster in monsters)
+            // TODO: 没怪物为什么不吃?
+            if (Monsters.Count == 0) return false;
+
+            // 所有的怪物, 如果有伤害, 不吃
+            foreach (var monster in Monsters)
                 if (Util.getDamage(hero, monster) != 0)
                     return false;
 
+            // 反之吃掉
             return true;
         }
 
         public override string ToString()
         {
             var builder = new StringBuilder();
-            if (id != 0) builder.Append("Id=").Append(id).Append(": ");
-            builder.Append($"({f},{x},{y})");
-            if (hero != null) builder.Append(" -- Hero: ").Append(hero);
-            if (item != null) builder.Append(" -- Items: ").Append(item);
-            if (doors.Count > 0) builder.Append(" -- Doors: ").Append(Serialize(doors));
-            if (monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Serialize(monsters));
-            builder.Append(" -- ").Append(linked.Count).Append(" Linked ");
-            foreach (var node in linked)
-                builder.Append(node.id).Append(",");
+            if (Id != 0) builder.Append("Id=").Append(Id).Append(": ");
+            builder.Append($"({Floor},{X},{Y})");
+            if (Hero != null) builder.Append(" -- Hero: ").Append(Hero);
+            if (Item != null) builder.Append(" -- Items: ").Append(Item);
+            if (Doors.Count > 0) builder.Append(" -- Doors: ").Append(Serialize(Doors));
+            if (Monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Serialize(Monsters));
+            builder.Append(" -- ").Append(LinkedNodes.Count).Append(" Linked ");
+            foreach (var node in LinkedNodes)
+                builder.Append(node.Id).Append(",");
             return builder.ToString();
         }
     }
