@@ -93,7 +93,7 @@ namespace Gempoll
         public void merge(Node another)
         {
             // merge items...
-            if (item != null) item.merge(another.item);
+            if (item != null) item.Merge(another.item);
 
             // merge doors...
             doors.AddRange(another.doors);

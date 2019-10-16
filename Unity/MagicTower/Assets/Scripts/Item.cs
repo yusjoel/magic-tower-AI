@@ -2,106 +2,114 @@
 
 namespace Gempoll
 {
+    /// <summary>
+    /// 道具
+    /// </summary>
     public class Item
     {
-        public int atk;
+        public int Attack;
 
-        public int blue;
+        public int BlueKeyCount;
 
-        public int def;
+        public int Defense;
 
-        public int green;
+        public int GreenKeyCount;
 
-        public int hp;
+        public int HitPoint;
 
-        public int mdef;
+        public int MagicDefense;
 
-        public int red;
+        public int RedKeyCount;
 
-        public int special;
+        // TODO: 以后删除
+        /// <summary>
+        ///     特殊节点
+        ///     <para>0x01: 访问了商店</para>
+        /// </summary>
+        public int Special;
 
-        public int yellow;
+        public int YellowKeyCount;
 
-        public void merge(Item another)
+        public void Merge(Item another)
         {
             if (another == null) return;
 
-            hp += another.hp;
-            atk += another.atk;
-            def += another.def;
-            mdef += another.mdef;
-            yellow += another.yellow;
-            blue += another.blue;
-            red += another.red;
-            green += another.green;
-            special += another.special;
+            HitPoint += another.HitPoint;
+            Attack += another.Attack;
+            Defense += another.Defense;
+            MagicDefense += another.MagicDefense;
+            YellowKeyCount += another.YellowKeyCount;
+            BlueKeyCount += another.BlueKeyCount;
+            RedKeyCount += another.RedKeyCount;
+            GreenKeyCount += another.GreenKeyCount;
+            Special |= another.Special;
         }
 
-        public Item setAtk(int atk)
+        public Item SetAttack(int attack)
         {
-            this.atk = atk;
+            Attack = attack;
             return this;
         }
 
-        public Item setBlue(int blue)
+        public Item SetBlueKeyCount(int blueKeyCount)
         {
-            this.blue = blue;
+            BlueKeyCount = blueKeyCount;
             return this;
         }
 
-        public Item setDef(int def)
+        public Item SetDefense(int defense)
         {
-            this.def = def;
+            Defense = defense;
             return this;
         }
 
-        public Item setGreen(int green)
+        public Item SetGreenKeyCount(int greenKeyCount)
         {
-            this.green = green;
+            GreenKeyCount = greenKeyCount;
             return this;
         }
 
-        public Item setHp(int hp)
+        public Item SetHitPoint(int hitPoint)
         {
-            this.hp = hp;
+            HitPoint = hitPoint;
             return this;
         }
 
-        public Item setMdef(int mdef)
+        public Item SetMagicDefense(int magicDefense)
         {
-            this.mdef = mdef;
+            MagicDefense = magicDefense;
             return this;
         }
 
-        public Item setRed(int red)
+        public Item SetRedKeyCount(int redKeyCount)
         {
-            this.red = red;
+            RedKeyCount = redKeyCount;
             return this;
         }
 
-        public Item setSpecial(int special)
+        public Item SetSpecial(int special)
         {
-            this.special = special;
+            Special = special;
             return this;
         }
 
-        public Item setYellow(int yellow)
+        public Item SetYellowKeyCount(int yellowKeyCount)
         {
-            this.yellow = yellow;
+            YellowKeyCount = yellowKeyCount;
             return this;
         }
 
         public override string ToString()
         {
             var builder = new StringBuilder();
-            if (hp > 0) builder.Append("hp+").Append(hp).Append(';');
-            if (atk > 0) builder.Append("atk+").Append(atk).Append(';');
-            if (def > 0) builder.Append("def+").Append(def).Append(';');
-            if (mdef > 0) builder.Append("mdef+").Append(mdef).Append(';');
-            if (yellow > 0) builder.Append("yellow+").Append(yellow).Append(';');
-            if (blue > 0) builder.Append("blue+").Append(blue).Append(';');
-            if (red > 0) builder.Append("red+").Append(red).Append(';');
-            if (green > 0) builder.Append("green+").Append(green).Append(';');
+            if (HitPoint > 0) builder.Append("hp+").Append(HitPoint).Append(';');
+            if (Attack > 0) builder.Append("atk+").Append(Attack).Append(';');
+            if (Defense > 0) builder.Append("def+").Append(Defense).Append(';');
+            if (MagicDefense > 0) builder.Append("mdef+").Append(MagicDefense).Append(';');
+            if (YellowKeyCount > 0) builder.Append("yellow+").Append(YellowKeyCount).Append(';');
+            if (BlueKeyCount > 0) builder.Append("blue+").Append(BlueKeyCount).Append(';');
+            if (RedKeyCount > 0) builder.Append("red+").Append(RedKeyCount).Append(';');
+            if (GreenKeyCount > 0) builder.Append("green+").Append(GreenKeyCount).Append(';');
             return builder.ToString();
         }
     }

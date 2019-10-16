@@ -62,7 +62,7 @@ namespace Gempoll
 
                     has = true;
                     current = current.merge(node, visited);
-                    if (node.item != null && (node.item.special & 1) != 0)
+                    if (node.item != null && (node.item.Special & 1) != 0)
                         shopTime = Math.Max(shopTime, 0);
                     visit(node);
                     break;

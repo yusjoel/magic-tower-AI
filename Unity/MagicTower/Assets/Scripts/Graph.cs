@@ -220,33 +220,33 @@ namespace Gempoll
                     stair[i][3] = k;
                 }
                 if (map[i, j, k] == YELLOW_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setYellow(1));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetYellowKeyCount(1));
                 if (map[i, j, k] == BLUE_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setBlue(1));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetBlueKeyCount(1));
                 if (map[i, j, k] == RED_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setRed(1));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetRedKeyCount(1));
                 if (map[i, j, k] == GREEN_KEY)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setGreen(1));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetGreenKeyCount(1));
                 if (map[i, j, k] == RED_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setAtk(p_atk));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetAttack(p_atk));
                 if (map[i, j, k] == BLUE_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setDef(p_def));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetDefense(p_def));
                 if (map[i, j, k] == GREEN_JEWEL)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setMdef(p_mdef));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetMagicDefense(p_mdef));
                 if (map[i, j, k] == RED_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setHp(p_red));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_red));
                 if (map[i, j, k] == BLUE_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setHp(p_blue));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_blue));
                 if (map[i, j, k] == YELLOW_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setHp(p_yellow));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_yellow));
                 if (map[i, j, k] == GREEN_POTION)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setHp(p_green));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetHitPoint(p_green));
                 if (map[i, j, k] == SWORD)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setAtk(p_sword));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetAttack(p_sword));
                 if (map[i, j, k] == SHIELD)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setDef(p_shield));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetDefense(p_shield));
                 if (map[i, j, k] == SHOP)
-                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().setSpecial(1));
+                    node = new Node(map[i, j, k], i, j, k).setItem(new Item().SetSpecial(1));
 
                 if (map[i, j, k] == DOOR_YELLOW)
                     node = new Node(map[i, j, k], i, j, k).setDoor(1);

@@ -46,14 +46,14 @@
         {
             if (item == null) return;
 
-            HitPoint += item.hp;
-            Attack += item.atk;
-            Defense += item.def;
-            MagicDefense += item.mdef;
-            YellowKeyCount += item.yellow;
-            BlueKeyCount += item.blue;
-            RedKeyCount += item.red;
-            GreenKeyCount += item.green;
+            HitPoint += item.HitPoint;
+            Attack += item.Attack;
+            Defense += item.Defense;
+            MagicDefense += item.MagicDefense;
+            YellowKeyCount += item.YellowKeyCount;
+            BlueKeyCount += item.BlueKeyCount;
+            RedKeyCount += item.RedKeyCount;
+            GreenKeyCount += item.GreenKeyCount;
         }
 
         public int GetScore()
