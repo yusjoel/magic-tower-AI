@@ -3,7 +3,7 @@
 namespace Gempoll
 {
     /// <summary>
-    /// 道具
+    ///     道具
     /// </summary>
     public class Item
     {

@@ -128,7 +128,7 @@ namespace Gempoll
             if (!visited[node.id] && current.linked.Remove(node))
             {
                 foreach (var monster in node.monsters)
-                    current.hero.Money += monster.money;
+                    current.hero.Money += monster.Money;
                 visited[node.id] = true;
             }
         }

@@ -4,7 +4,7 @@
     {
         public static int getDamage(Hero hero, Monster monster)
         {
-            return getDamage(hero.Attack, hero.Defense, hero.MagicDefense, monster.hp, monster.atk, monster.def, monster.special);
+            return getDamage(hero.Attack, hero.Defense, hero.MagicDefense, monster.HitPoint, monster.Attack, monster.Defense, monster.Special);
         }
 
         /// <summary>
