@@ -69,7 +69,7 @@ namespace Gempoll
                 }
             }
             // Use shop
-            while (graph.shop.useShop(current.Hero, shopTime))
+            while (graph.shop.Buy(current.Hero, shopTime))
                 shopTime++;
         }
 

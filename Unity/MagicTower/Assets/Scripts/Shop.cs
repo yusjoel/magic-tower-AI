@@ -1,66 +1,70 @@
 ﻿namespace Gempoll
 {
+    /// <summary>
+    ///     商店
+    ///     <para>一个简单的商店模型, 价格随访问次数变化, 出售若干点数的攻, 防, 血, 魔防</para>
+    /// </summary>
     public class Shop
     {
-        private readonly int atk;
+        private readonly int attack;
+
+        private readonly int defense;
 
         private readonly int delta;
 
+        private readonly int hitPoint;
+
+        private readonly int magicDefense;
+
         private readonly int start;
 
-        private readonly int def;
-
-        private readonly int hp;
-
-        private readonly int mdef;
-
-        public Shop(int start, int delta, int hp, int atk, int def, int mdef)
+        public Shop(int start, int delta, int hitPoint, int attack, int defense, int magicDefense)
         {
             this.start = start;
             this.delta = delta;
-            this.hp = hp;
-            this.atk = atk;
-            this.def = def;
-            this.mdef = mdef;
+            this.hitPoint = hitPoint;
+            this.attack = attack;
+            this.defense = defense;
+            this.magicDefense = magicDefense;
         }
 
-        public int getAtkPoint()
+        public int GetAttack()
         {
-            return atk;
+            return attack;
         }
 
-        public int getDefPoint()
+        public int GetDefense()
         {
-            return def;
+            return defense;
         }
 
-        public int getHpPoint()
+        public int GetHitPoint()
         {
-            return hp;
+            return hitPoint;
         }
 
-        public int getMDefPoint()
+        public int GetMagicDefense()
         {
-            return mdef;
+            return magicDefense;
         }
 
-        public int moneyNeeded(int visitTime)
+        public int GetMoneyNeeded(int visitTime)
         {
             return start + delta * visitTime;
         }
 
-        public bool useShop(Hero hero, int visitTime)
+        public bool Buy(Hero hero, int visitTime)
         {
             if (visitTime < 0) return false;
-            if (hero.Money < moneyNeeded(visitTime)) return false;
+            if (hero.Money < GetMoneyNeeded(visitTime)) return false;
 
             /**
              * Algorithm to choose HP/ATK/DEF/MDEF
              */
 
             // Add Attack
-            hero.Money -= moneyNeeded(visitTime);
-            hero.Attack += getAtkPoint();
+            hero.Money -= GetMoneyNeeded(visitTime);
+            hero.Attack += GetAttack();
             return true;
         }
     }
