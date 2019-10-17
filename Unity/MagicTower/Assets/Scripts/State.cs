@@ -85,7 +85,7 @@ namespace Gempoll
                 }
             }
             // Use shop
-            while (graph.Shop.Buy(Current.Hero, shopTime))
+            while (graph.GameInfo.Shop.Buy(Current.Hero, shopTime))
                 shopTime++;
         }
 

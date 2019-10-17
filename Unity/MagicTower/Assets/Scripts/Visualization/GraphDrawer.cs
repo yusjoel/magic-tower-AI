@@ -131,12 +131,12 @@ namespace Gempoll.Visualization
         /// </summary>
         private void DrawFloor()
         {
-            for (int i = 0; i < graph.RowCount; i++)
-            for (int j = 0; j < graph.ColumnCount; j++)
+            for (int i = 0; i < graph.GameInfo.RowCount; i++)
+            for (int j = 0; j < graph.GameInfo.ColumnCount; j++)
             {
                 CreateRoad(i, j);
 
-                int n = graph.Map[floor, i, j];
+                int n = graph.GameInfo.Grid[floor, i, j];
                 GameObject go = null;
                 switch (n)
                 {
@@ -211,8 +211,8 @@ namespace Gempoll.Visualization
         /// <returns></returns>
         private Vector2 CalculatePosition(int i, int j)
         {
-            float x = (i - graph.RowCount / 2f + 0.5f) * tileWidth;
-            float y = (j - graph.ColumnCount / 2f + 0.5f) * tileHeight;
+            float x = (i - graph.GameInfo.RowCount / 2f + 0.5f) * tileWidth;
+            float y = (j - graph.GameInfo.ColumnCount / 2f + 0.5f) * tileHeight;
             return new Vector2(x, y);
         }
 

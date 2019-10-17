@@ -39,9 +39,9 @@ namespace Gempoll.Editor.Tests
                 var scanner = new Scanner(fileStream);
                 var graph = new Graph(scanner, false, false);
                 // 起始的3个数据
-                Assert.AreEqual(1, graph.FloorCount);
-                Assert.AreEqual(11, graph.RowCount);
-                Assert.AreEqual(11, graph.ColumnCount);
+                Assert.AreEqual(1, graph.GameInfo.FloorCount);
+                Assert.AreEqual(11, graph.GameInfo.RowCount);
+                Assert.AreEqual(11, graph.GameInfo.ColumnCount);
 
                 // 最后的3个数据
                 Assert.AreEqual(0, graph.HeroNode.Floor);

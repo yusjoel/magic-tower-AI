@@ -12,51 +12,13 @@ namespace Gempoll
     public class Graph
     {
         /// <summary>
-        ///     层的列数
-        /// </summary>
-        public readonly int ColumnCount;
-
-        /// <summary>
-        ///     总层数
-        /// </summary>
-        public readonly int FloorCount;
-
-        /// <summary>
         ///     节点列表
         /// </summary>
         public readonly List<Node> Nodes;
 
-        // TODO: 读取的地图信息应该独立出去成为一个类
         /// <summary>
-        ///     地图
+        ///     是否要合并节点 (有商店就不能合并)
         /// </summary>
-        public readonly int[,,] Map;
-
-        /// <summary>
-        ///     层的行数
-        /// </summary>
-        public readonly int RowCount;
-
-        private readonly Dictionary<int, Monster> monsterMap;
-
-        private readonly int attackOfRedJewel;
-
-        private readonly int hitPointOfBluePotion;
-
-        private readonly int defenseOfBlueJewel;
-
-        private readonly int hitPointOfGreenPotion;
-
-        private readonly int magicDefenseOfGreenJewel;
-
-        private readonly int hitPointOfRedPotion;
-
-        private readonly int defenseOfShield;
-
-        private readonly int attackOfSword;
-
-        private readonly int hitPointOfYellowPotion;
-
         private readonly bool shouldMerge;
 
         /// <summary>
@@ -67,82 +29,48 @@ namespace Gempoll
         /// </summary>
         private readonly int[][] stair;
 
+        /// <summary>
+        ///     Boss所在的节点编号
+        /// </summary>
         public int NodeIdOfBoss = -1;
 
-        public Node HeroNode;
-
-        public Shop Shop;
-
+        /// <summary>
+        ///     是否要吃掉周围的道具或者无消耗的怪
+        /// </summary>
         public bool ShouldEat;
+
+        /// <summary>
+        ///     游戏信息
+        /// </summary>
+        public readonly GameInfo GameInfo;
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
-            Nodes = new List<Node>();
-            FloorCount = scanner.NextInt();
-            RowCount = scanner.NextInt();
-            ColumnCount = scanner.NextInt();
-            Map = new int[FloorCount, RowCount, ColumnCount];
-            stair = new int[FloorCount][];
+            GameInfo = new GameInfo(scanner);
 
-            for (int i = 0; i < FloorCount; i++)
+            HeroNode =
+                new Node(0, GameInfo.HeroFloor, GameInfo.HeroPositionX, GameInfo.HeroPositionY).SetHero(GameInfo.Hero);
+
+            Nodes = new List<Node> { HeroNode };
+
+            stair = new int[GameInfo.FloorCount][];
+            for (int i = 0; i < GameInfo.FloorCount; i++)
                 stair[i] = new[] { -1, -1, -1, -1 };
-
-            for (int i = 0; i < FloorCount; i++)
-            for (int j = 0; j < RowCount; j++)
-            for (int k = 0; k < ColumnCount; k++)
-                Map[i, j, k] = scanner.NextInt();
-
-            // 读取道具属性
-            attackOfRedJewel = scanner.NextInt();
-            defenseOfBlueJewel = scanner.NextInt();
-            magicDefenseOfGreenJewel = scanner.NextInt();
-            hitPointOfRedPotion = scanner.NextInt();
-            hitPointOfBluePotion = scanner.NextInt();
-            hitPointOfYellowPotion = scanner.NextInt();
-            hitPointOfGreenPotion = scanner.NextInt();
-            attackOfSword = scanner.NextInt();
-            defenseOfShield = scanner.NextInt();
-
-            // 读取怪物列表
-            monsterMap = new Dictionary<int, Monster>();
-            int monsterCount = scanner.NextInt();
-            for (int i = 0; i < monsterCount; i++)
-            {
-                int id = scanner.NextInt();
-                var monster = new Monster(id, scanner.NextInt(), scanner.NextInt(), scanner.NextInt(),
-                    scanner.NextInt(), scanner.NextInt());
-                monsterMap.Add(id, monster);
-            }
-
-            // 读取商店信息
-            Shop = new Shop(scanner.NextInt(), scanner.NextInt(), scanner.NextInt(),
-                scanner.NextInt(), scanner.NextInt(), scanner.NextInt());
-
-            // 读取英雄初始状态和位置
-            int hitPoint = scanner.NextInt();
-            int attack = scanner.NextInt();
-            int defense = scanner.NextInt();
-            int magicDefense = scanner.NextInt();
-            int money = scanner.NextInt();
-            int yellowKeyCount = scanner.NextInt();
-            int blueKeyCount = scanner.NextInt();
-            int redKeyCount = scanner.NextInt();
-            int floor = scanner.NextInt();
-            int x = scanner.NextInt();
-            int y = scanner.NextInt();
-
-            var hero = new Hero(hitPoint, attack, defense, magicDefense, money, yellowKeyCount, blueKeyCount,
-                redKeyCount, 0);
-            HeroNode = new Node(0, floor, x, y).SetHero(hero);
 
             this.shouldMerge = shouldMerge;
             ShouldEat = shouldEat;
         }
 
+        /// <summary>
+        ///     英雄节点
+        /// </summary>
+        public Node HeroNode;
+
+        /// <summary>
+        ///     创建节点
+        /// </summary>
         public void Build()
         {
-            Nodes.Add(HeroNode);
-
             BuildMap();
 
             if (shouldMerge)
@@ -159,65 +87,73 @@ namespace Gempoll
 
         private void BuildMap()
         {
-            for (int i = 0; i < FloorCount; i++)
-            for (int j = 0; j < RowCount; j++)
-            for (int k = 0; k < ColumnCount; k++)
+            for (int i = 0; i < GameInfo.FloorCount; i++)
+            for (int j = 0; j < GameInfo.RowCount; j++)
+            for (int k = 0; k < GameInfo.ColumnCount; k++)
             {
                 Node node = null;
-                if (Map[i, j, k] == ObjectId.UPSTAIR)
+                if (GameInfo.Grid[i, j, k] == ObjectId.UPSTAIR)
                 {
                     stair[i][0] = j;
                     stair[i][1] = k;
                 }
-                if (Map[i, j, k] == ObjectId.DOWNSTAIR)
+                if (GameInfo.Grid[i, j, k] == ObjectId.DOWNSTAIR)
                 {
                     stair[i][2] = j;
                     stair[i][3] = k;
                 }
-                if (Map[i, j, k] == ObjectId.YELLOW_KEY)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetYellowKeyCount(1));
-                if (Map[i, j, k] == ObjectId.BLUE_KEY)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetBlueKeyCount(1));
-                if (Map[i, j, k] == ObjectId.RED_KEY)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetRedKeyCount(1));
-                if (Map[i, j, k] == ObjectId.GREEN_KEY)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetGreenKeyCount(1));
-                if (Map[i, j, k] == ObjectId.RED_JEWEL)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetAttack(attackOfRedJewel));
-                if (Map[i, j, k] == ObjectId.BLUE_JEWEL)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetDefense(defenseOfBlueJewel));
-                if (Map[i, j, k] == ObjectId.GREEN_JEWEL)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(
-                        new Item().SetMagicDefense(magicDefenseOfGreenJewel));
-                if (Map[i, j, k] == ObjectId.RED_POTION)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfRedPotion));
-                if (Map[i, j, k] == ObjectId.BLUE_POTION)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfBluePotion));
-                if (Map[i, j, k] == ObjectId.YELLOW_POTION)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfYellowPotion));
-                if (Map[i, j, k] == ObjectId.GREEN_POTION)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetHitPoint(hitPointOfGreenPotion));
-                if (Map[i, j, k] == ObjectId.SWORD)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetAttack(attackOfSword));
-                if (Map[i, j, k] == ObjectId.SHIELD)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetDefense(defenseOfShield));
-                if (Map[i, j, k] == ObjectId.SHOP)
-                    node = new Node(Map[i, j, k], i, j, k).SetItem(new Item().SetSpecial(1));
+                if (GameInfo.Grid[i, j, k] == ObjectId.YELLOW_KEY)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(new Item().SetYellowKeyCount(1));
+                if (GameInfo.Grid[i, j, k] == ObjectId.BLUE_KEY)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(new Item().SetBlueKeyCount(1));
+                if (GameInfo.Grid[i, j, k] == ObjectId.RED_KEY)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(new Item().SetRedKeyCount(1));
+                if (GameInfo.Grid[i, j, k] == ObjectId.GREEN_KEY)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(new Item().SetGreenKeyCount(1));
+                if (GameInfo.Grid[i, j, k] == ObjectId.RED_JEWEL)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetAttack(GameInfo.AttackOfRedJewel));
+                if (GameInfo.Grid[i, j, k] == ObjectId.BLUE_JEWEL)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetDefense(GameInfo.DefenseOfBlueJewel));
+                if (GameInfo.Grid[i, j, k] == ObjectId.GREEN_JEWEL)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetMagicDefense(GameInfo.MagicDefenseOfGreenJewel));
+                if (GameInfo.Grid[i, j, k] == ObjectId.RED_POTION)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetHitPoint(GameInfo.HitPointOfRedPotion));
+                if (GameInfo.Grid[i, j, k] == ObjectId.BLUE_POTION)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetHitPoint(GameInfo.HitPointOfBluePotion));
+                if (GameInfo.Grid[i, j, k] == ObjectId.YELLOW_POTION)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetHitPoint(GameInfo.HitPointOfYellowPotion));
+                if (GameInfo.Grid[i, j, k] == ObjectId.GREEN_POTION)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetHitPoint(GameInfo.HitPointOfGreenPotion));
+                if (GameInfo.Grid[i, j, k] == ObjectId.SWORD)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetAttack(GameInfo.AttackOfSword));
+                if (GameInfo.Grid[i, j, k] == ObjectId.SHIELD)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(
+                        new Item().SetDefense(GameInfo.DefenseOfShield));
+                if (GameInfo.Grid[i, j, k] == ObjectId.SHOP)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetItem(new Item().SetSpecial(1));
 
-                if (Map[i, j, k] == ObjectId.DOOR_YELLOW)
-                    node = new Node(Map[i, j, k], i, j, k).SetDoor(1);
-                if (Map[i, j, k] == ObjectId.DOOR_BLUE)
-                    node = new Node(Map[i, j, k], i, j, k).SetDoor(2);
-                if (Map[i, j, k] == ObjectId.DOOR_RED)
-                    node = new Node(Map[i, j, k], i, j, k).SetDoor(3);
-                if (Map[i, j, k] == ObjectId.DOOR_GREEN)
-                    node = new Node(Map[i, j, k], i, j, k).SetDoor(4);
-                if (Map[i, j, k] >= ObjectId.MONSTER_BOUND)
+                if (GameInfo.Grid[i, j, k] == ObjectId.DOOR_YELLOW)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetDoor(1);
+                if (GameInfo.Grid[i, j, k] == ObjectId.DOOR_BLUE)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetDoor(2);
+                if (GameInfo.Grid[i, j, k] == ObjectId.DOOR_RED)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetDoor(3);
+                if (GameInfo.Grid[i, j, k] == ObjectId.DOOR_GREEN)
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetDoor(4);
+                if (GameInfo.Grid[i, j, k] >= ObjectId.MONSTER_BOUND)
                 {
-                    var monster = monsterMap[Map[i, j, k]];
+                    var monster = GameInfo.MonsterMap[GameInfo.Grid[i, j, k]];
                     if (monster == null) continue;
 
-                    node = new Node(Map[i, j, k], i, j, k).SetMonster(monster);
+                    node = new Node(GameInfo.Grid[i, j, k], i, j, k).SetMonster(monster);
                 }
 
                 if (node != null)
@@ -275,7 +211,7 @@ namespace Gempoll
             // 同层的情况
             if (x1 == x2 && y1 == y2) return true;
 
-            var visited = new bool[RowCount, ColumnCount];
+            var visited = new bool[GameInfo.RowCount, GameInfo.ColumnCount];
             visited[x1, y1] = true;
 
             var queue = new Queue<int>();
@@ -289,12 +225,13 @@ namespace Gempoll
                 foreach (var dir in directions)
                 {
                     int nx = x + dir[0], ny = y + dir[1];
-                    if (nx < 0 || nx >= RowCount || ny < 0 || ny >= ColumnCount) continue;
+                    if (nx < 0 || nx >= GameInfo.RowCount || ny < 0 || ny >= GameInfo.ColumnCount) continue;
 
                     if (nx == x2 && ny == y2) return true;
 
-                    if (visited[nx, ny] || Map[f1, nx, ny] != ObjectId.ROAD
-                        && Map[f1, nx, ny] != ObjectId.UPSTAIR && Map[f1, nx, ny] != ObjectId.DOWNSTAIR)
+                    if (visited[nx, ny] || GameInfo.Grid[f1, nx, ny] != ObjectId.ROAD
+                        && GameInfo.Grid[f1, nx, ny] != ObjectId.UPSTAIR &&
+                        GameInfo.Grid[f1, nx, ny] != ObjectId.DOWNSTAIR)
                         continue;
 
                     visited[nx, ny] = true;
