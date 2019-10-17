@@ -135,21 +135,22 @@ namespace Gempoll
         }
 
         /// <summary>
-        ///     用于求解的合并节点
+        ///     访问节点
         /// </summary>
         /// <param name="another"></param>
-        /// <param name="visited"></param>
+        /// <param name="visitedNodes"></param>
         /// <returns></returns>
-        public Node Merge(Node another, bool[] visited)
+        public Node TryVisit(Node another, bool[] visitedNodes)
         {
+            // 先克隆当前节点
             var node = new Node(ObjectId, another.Floor, another.X, another.Y).SetHero(new Hero(Hero));
             node.LinkedNodes = new LinkedHashSet<Node>(LinkedNodes);
 
-            // get item
+            // 获取目标节点道具
             if (another.Item != null)
                 node.Hero.GetItem(another.Item);
 
-            // open doors...
+            // 开门扣钥匙
             foreach (int door in another.Doors)
             {
                 if (door == 1) node.Hero.YellowKeyCount--;
@@ -157,17 +158,27 @@ namespace Gempoll
                 if (door == 3) node.Hero.RedKeyCount--;
             }
 
-            // beat monsters...
+            // 杀怪
             foreach (var monster in another.Monsters)
                 node.Hero.HitPoint -= Utility.GetDamage(node.Hero, monster);
 
+            // 检查有效性
             if (!node.Hero.IsValid())
                 return null;
 
-            // merge linked nodes
+            // 有效的话进行连接
             foreach (var to in another.LinkedNodes)
-                if (!visited[to.Id])
+                if (!visitedNodes[to.Id])
                     node.Link(to);
+
+            node.LinkedNodes.Remove(another);
+
+            // 加钱
+            foreach (var monster in another.Monsters)
+                node.Hero.Money += monster.Money;
+
+            // 设访问
+            visitedNodes[another.Id] = true;
 
             return node;
         }

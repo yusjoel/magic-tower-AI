@@ -62,13 +62,13 @@
         }
 
         /// <summary>
-        /// 验证合法性
+        /// 是否有效
         /// </summary>
         /// <returns></returns>
         public bool IsValid()
         {
-            // 打不过的怪
-            // 开不了的门
+            // 杀怪后血小于等于0了
+            // 开门后钥匙小于0了
             return HitPoint > 0 && YellowKeyCount >= 0 && BlueKeyCount >= 0 && RedKeyCount >= 0 && GreenKeyCount >= 0;
         }
 

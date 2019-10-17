@@ -19,6 +19,9 @@ namespace Gempoll
 
         private readonly Graph graph;
 
+        /// <summary>
+        ///     合并的节点数
+        /// </summary>
         public int Count;
 
         /// <summary>
@@ -75,10 +78,9 @@ namespace Gempoll
                     if (!node.ShouldEat(graph.ShouldEat ? Current.Hero : null)) continue;
 
                     has = true;
-                    Current = Current.Merge(node, VisitedNodes);
+                    Current = Current.TryVisit(node, VisitedNodes);
                     if (node.Item != null && (node.Item.Special & 1) != 0)
                         shopTime = Math.Max(shopTime, 0);
-                    Visit(node);
                     break;
                 }
             }
@@ -130,11 +132,10 @@ namespace Gempoll
             if (VisitedNodes[node.Id] || !Current.LinkedNodes.Contains(node))
                 return null;
 
-            var another = Current.Merge(node, VisitedNodes);
+            var another = Current.TryVisit(node, VisitedNodes);
             if (another == null) return null;
 
             Current = another;
-            Visit(node);
             Route.Add(Current.ToString());
             EatItem();
             Count++;
@@ -156,17 +157,6 @@ namespace Gempoll
                 return true;
 
             return false;
-        }
-
-        // TODO: 放到Node.Merge()中, 并且可以把Merge改成Visit
-        public void Visit(Node node)
-        {
-            if (!VisitedNodes[node.Id] && Current.LinkedNodes.Remove(node))
-            {
-                foreach (var monster in node.Monsters)
-                    Current.Hero.Money += monster.Money;
-                VisitedNodes[node.Id] = true;
-            }
         }
 
         /// <summary>
