@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Gempoll.Extensions;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Gempoll
@@ -183,27 +184,6 @@ namespace Gempoll
             return node;
         }
 
-        /// <summary>
-        ///     模拟java的list.toString()
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        private string Serialize<T>(List<T> list)
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append("[");
-            for (int i = 0; i < list.Count; i++)
-            {
-                var item = list[i];
-                stringBuilder.Append(item);
-                if (i < list.Count - 1)
-                    stringBuilder.Append(", ");
-            }
-            stringBuilder.Append("]");
-            return stringBuilder.ToString();
-        }
-
         public Node SetDoor(int door)
         {
             Doors.Add(door);
@@ -268,8 +248,8 @@ namespace Gempoll
             builder.Append($"({Floor},{X},{Y})");
             if (Hero != null) builder.Append(" -- Hero: ").Append(Hero);
             if (Item != null) builder.Append(" -- Items: ").Append(Item);
-            if (Doors.Count > 0) builder.Append(" -- Doors: ").Append(Serialize(Doors));
-            if (Monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Serialize(Monsters));
+            if (Doors.Count > 0) builder.Append(" -- Doors: ").Append(Doors.Serialize());
+            if (Monsters.Count > 0) builder.Append(" -- Monsters: ").Append(Monsters.Serialize());
             builder.Append(" -- ").Append(LinkedNodes.Count).Append(" Linked ");
             foreach (var node in LinkedNodes)
                 builder.Append(node.Id).Append(",");

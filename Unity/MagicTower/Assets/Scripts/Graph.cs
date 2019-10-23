@@ -370,10 +370,11 @@ namespace Gempoll
 
             int index = 0, solutions = 0;
 
-            var set = new HashSet<long>();
-            var map = new Dictionary<long, int>();
-
-            // !!! start bfs !!!!!
+            // 记录已经处理过的状态, 已处理过的状态不再处理
+            // 由于队列是优先队列, 所以分数高的状态比如优先出队, 所以分数低的状态肯定不会再处理
+            var stateHashSet = new HashSet<long>();
+            // 用于保存当前状态的最高分, 低于该分的状态不加入到队列中
+            var stateHashScoreMap = new Dictionary<long, int>();
 
             int start = DateTime.Now.Millisecond;
 
@@ -392,7 +393,7 @@ namespace Gempoll
                 //    break;
                 //Console.WriteLine("Poll: {0}, Cnt {1}, Score {2}", state.current, state.cnt, state.GetScore());
 
-                if (!set.Add(state.Hash())) continue;
+                if (!stateHashSet.Add(state.Hash())) continue;
 
                 if (state.ShouldStop())
                 {
@@ -414,11 +415,11 @@ namespace Gempoll
 
                     long hash = another.Hash();
                     int score;
-                    if (!map.TryGetValue(hash, out score))
+                    if (!stateHashScoreMap.TryGetValue(hash, out score))
                         score = -1;
                     if (score > another.GetScore()) continue;
 
-                    map[hash] = another.GetScore();
+                    stateHashScoreMap[hash] = another.GetScore();
                     another.Id = stateId++;
                     queue.Enqueue(another);
 
