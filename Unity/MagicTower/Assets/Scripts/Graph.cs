@@ -46,7 +46,8 @@ namespace Gempoll
 
         public Graph(Scanner scanner, bool shouldMerge, bool shouldEat)
         {
-            GameInfo = new GameInfo(scanner);
+            GameInfo = new GameInfo();
+            GameInfo.Deserialize(scanner);
 
             HeroNode =
                 new Node(0, GameInfo.HeroFloor, GameInfo.HeroPositionX, GameInfo.HeroPositionY).SetHero(GameInfo.Hero);

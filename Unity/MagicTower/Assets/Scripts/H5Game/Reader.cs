@@ -32,6 +32,8 @@ namespace Gempoll.H5Game
         /// </summary>
         private int floorWidth;
 
+        private GameInfo gameInfo = new GameInfo();
+
         /// <summary>
         ///     构造函数
         /// </summary>

@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
 using System.IO;
 using System.Text;
 
@@ -7,35 +6,6 @@ namespace Gempoll.Editor.Tests
 {
     public class GraphTest
     {
-        /// <summary>
-        ///     测试读取地图文件
-        /// </summary>
-        [Test]
-        public void TestReadMap()
-        {
-            string map1 = Helper.GetStreamingAssetPath("map1.txt");
-            using (var fileStream = File.OpenRead(map1))
-            {
-                var scanner = new Scanner(fileStream);
-                var graph = new Graph(scanner, false, false);
-                // 起始的3个数据
-                Assert.AreEqual(1, graph.GameInfo.FloorCount);
-                Assert.AreEqual(11, graph.GameInfo.RowCount);
-                Assert.AreEqual(11, graph.GameInfo.ColumnCount);
-
-                // 最后的3个数据
-                Assert.AreEqual(0, graph.HeroNode.Floor);
-                Assert.AreEqual(0, graph.HeroNode.X);
-                Assert.AreEqual(5, graph.HeroNode.Y);
-
-                // 应该正好读完
-                Assert.Throws<IndexOutOfRangeException>(() =>
-                {
-                    scanner.NextInt();
-                });
-            }
-        }
-
         /// <summary>
         ///     测试创建图(不合并节点)
         /// </summary>

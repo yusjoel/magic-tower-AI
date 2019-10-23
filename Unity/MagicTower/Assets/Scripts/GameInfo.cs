@@ -13,72 +13,37 @@ namespace Gempoll
         /// <summary>
         ///     红宝石加的攻
         /// </summary>
-        public readonly int AttackOfRedJewel;
+        public int AttackOfRedJewel;
 
         /// <summary>
         ///     剑加的攻
         /// </summary>
-        public readonly int AttackOfSword;
+        public int AttackOfSword;
 
         /// <summary>
         ///     层的列数
         /// </summary>
-        public readonly int ColumnCount;
+        public int ColumnCount;
 
         /// <summary>
         ///     蓝宝石加的防
         /// </summary>
-        public readonly int DefenseOfBlueJewel;
+        public int DefenseOfBlueJewel;
 
         /// <summary>
         ///     盾加的防
         /// </summary>
-        public readonly int DefenseOfShield;
+        public int DefenseOfShield;
 
         /// <summary>
         ///     总层数
         /// </summary>
-        public readonly int FloorCount;
+        public int FloorCount;
 
         /// <summary>
         ///     地图
         /// </summary>
-        public readonly int[,,] Grid;
-
-        /// <summary>
-        ///     蓝药水加的血
-        /// </summary>
-        public readonly int HitPointOfBluePotion;
-
-        /// <summary>
-        ///     绿药水加的血
-        /// </summary>
-        public readonly int HitPointOfGreenPotion;
-
-        /// <summary>
-        ///     红药水加的血
-        /// </summary>
-        public readonly int HitPointOfRedPotion;
-
-        /// <summary>
-        ///     黄药水加的血
-        /// </summary>
-        public readonly int HitPointOfYellowPotion;
-
-        /// <summary>
-        ///     绿宝石加的魔防
-        /// </summary>
-        public readonly int MagicDefenseOfGreenJewel;
-
-        /// <summary>
-        ///     怪物信息
-        /// </summary>
-        public readonly Dictionary<int, Monster> MonsterMap;
-
-        /// <summary>
-        ///     层的行数
-        /// </summary>
-        public readonly int RowCount;
+        public int[,,] Grid;
 
         /// <summary>
         ///     英雄初始信息
@@ -101,11 +66,50 @@ namespace Gempoll
         public int HeroPositionY;
 
         /// <summary>
+        ///     蓝药水加的血
+        /// </summary>
+        public int HitPointOfBluePotion;
+
+        /// <summary>
+        ///     绿药水加的血
+        /// </summary>
+        public int HitPointOfGreenPotion;
+
+        /// <summary>
+        ///     红药水加的血
+        /// </summary>
+        public int HitPointOfRedPotion;
+
+        /// <summary>
+        ///     黄药水加的血
+        /// </summary>
+        public int HitPointOfYellowPotion;
+
+        /// <summary>
+        ///     绿宝石加的魔防
+        /// </summary>
+        public int MagicDefenseOfGreenJewel;
+
+        /// <summary>
+        ///     怪物信息
+        /// </summary>
+        public Dictionary<int, Monster> MonsterMap;
+
+        /// <summary>
+        ///     层的行数
+        /// </summary>
+        public int RowCount;
+
+        /// <summary>
         ///     商店信息
         /// </summary>
         public Shop Shop;
 
-        public GameInfo(Scanner scanner)
+        /// <summary>
+        ///     反序列化
+        /// </summary>
+        /// <param name="scanner"></param>
+        public void Deserialize(Scanner scanner)
         {
             FloorCount = scanner.NextInt();
             RowCount = scanner.NextInt();

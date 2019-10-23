@@ -16,7 +16,9 @@ namespace Gempoll.Editor.Tests
             using (var fileStream = File.OpenRead(map1))
             {
                 var scanner = new Scanner(fileStream);
-                var gameInfo = new GameInfo(scanner);
+                var gameInfo = new GameInfo();
+                gameInfo.Deserialize(scanner);
+
                 // 起始的3个数据
                 Assert.AreEqual(1, gameInfo.FloorCount);
                 Assert.AreEqual(11, gameInfo.RowCount);
@@ -47,7 +49,8 @@ namespace Gempoll.Editor.Tests
             {
                 streamWriter.NewLine = "\n";
                 var scanner = new Scanner(fileStream);
-                var gameInfo = new GameInfo(scanner);
+                var gameInfo = new GameInfo();
+                gameInfo.Deserialize(scanner);
                 gameInfo.Serialize(streamWriter);
                 streamWriter.Flush();
 
@@ -71,7 +74,8 @@ namespace Gempoll.Editor.Tests
             {
                 streamWriter.NewLine = "\n";
                 var scanner = new Scanner(fileStream);
-                var gameInfo = new GameInfo(scanner);
+                var gameInfo = new GameInfo();
+                gameInfo.Deserialize(scanner);
                 gameInfo.Serialize(streamWriter);
             }
         }
