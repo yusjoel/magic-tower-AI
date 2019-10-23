@@ -5,3 +5,4 @@ MagicTower/obj
 MagicTower/Temp
 
 !*.meta
+!*.pdb

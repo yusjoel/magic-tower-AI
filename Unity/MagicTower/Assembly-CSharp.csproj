@@ -58,8 +58,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Extensions\ListExtension.cs" />
     <Compile Include="Assets\Scripts\GameInfo.cs" />
     <Compile Include="Assets\Scripts\Graph.cs" />
+    <Compile Include="Assets\Scripts\H5Game\Reader.cs" />
     <Compile Include="Assets\Scripts\Hero.cs" />
     <Compile Include="Assets\Scripts\Item.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
@@ -86,6 +88,7 @@
     <None Include="Assets\StreamingAssets\map1.txt" />
     <None Include="Assets\StreamingAssets\map1-nodes-no-merge.txt" />
     <None Include="Assets\StreamingAssets\map2-nodes-no-merge.txt" />
+    <None Include="Assets\StreamingAssets\Issues\01\map1.txt" />
     <None Include="Assets\StreamingAssets\map2.txt" />
     <None Include="Assets\StreamingAssets\map1-answer.txt" />
     <None Include="Assets\StreamingAssets\map2-answer.txt" />
@@ -296,6 +299,9 @@
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>D:/Program Files/Unity2018.1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>D:/Github/magic-tower-AI/Unity/MagicTower/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
       <HintPath>C:/Users/Administrator/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>

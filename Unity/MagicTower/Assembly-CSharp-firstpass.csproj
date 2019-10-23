@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Assets\Plugins\LinkedHashSet.cs" />
     <Compile Include="Assets\Plugins\PriorityQueue.cs" />
+    <None Include="Assets\Plugins\Newtonsoft.Json.xml" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Github/magic-tower-AI/Unity/MagicTower/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
@@ -266,6 +267,9 @@
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>D:/Program Files/Unity2018.1/Editor/Data/UnityExtensions/Unity/UnitySpatialTracking/RuntimeEditor/UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>D:/Github/magic-tower-AI/Unity/MagicTower/Assets/Plugins/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Analytics">
       <HintPath>C:/Users/Administrator/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.analytics@2.0.16/UnityEngine.Analytics.dll</HintPath>
