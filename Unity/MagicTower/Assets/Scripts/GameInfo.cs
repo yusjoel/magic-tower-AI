@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Gempoll
 {
@@ -138,8 +140,14 @@ namespace Gempoll
             }
 
             // 读取商店信息
-            Shop = new Shop(scanner.NextInt(), scanner.NextInt(), scanner.NextInt(),
-                scanner.NextInt(), scanner.NextInt(), scanner.NextInt());
+            int shopStart = scanner.NextInt();
+            int shopDelta = scanner.NextInt();
+            int shopPoint = scanner.NextInt();
+            int shopAttack = scanner.NextInt();
+            int shopDefense = scanner.NextInt();
+            int shopMagicDefense = scanner.NextInt();
+            Shop = new Shop(shopStart, shopDelta, shopPoint,
+                shopAttack, shopDefense, shopMagicDefense);
 
             // 读取英雄初始状态和位置
             int hitPoint = scanner.NextInt();
@@ -156,6 +164,61 @@ namespace Gempoll
 
             Hero = new Hero(hitPoint, attack, defense, magicDefense, money, yellowKeyCount, blueKeyCount,
                 redKeyCount, 0);
+        }
+
+        /// <summary>
+        ///     序列化
+        /// </summary>
+        /// <param name="streamWriter"></param>
+        public void Serialize(StreamWriter streamWriter)
+        {
+            // 地图
+            streamWriter.WriteLine(FloorCount);
+            streamWriter.WriteLine($"{RowCount} {ColumnCount}");
+            streamWriter.WriteLine();
+
+            for (int i = 0; i < FloorCount; i++)
+            for (int j = 0; j < RowCount; j++)
+            {
+                for (int k = 0; k < ColumnCount; k++)
+                {
+                    streamWriter.Write(Grid[i, j, k]);
+                    if (k < ColumnCount - 1)
+                        streamWriter.Write("\t");
+                    else
+                        streamWriter.WriteLine();
+                }
+
+                if (j == RowCount - 1)
+                {
+                    streamWriter.WriteLine();
+                    streamWriter.WriteLine();
+                }
+            }
+
+            // 道具
+            streamWriter.Write($"{AttackOfRedJewel} {DefenseOfBlueJewel} {MagicDefenseOfGreenJewel} ");
+            streamWriter.Write(
+                $"{HitPointOfRedPotion} {HitPointOfBluePotion} {HitPointOfYellowPotion} {HitPointOfGreenPotion} ");
+            streamWriter.WriteLine($"{AttackOfSword} {DefenseOfShield}");
+            streamWriter.WriteLine();
+
+            // 怪物
+            streamWriter.WriteLine(MonsterMap.Count);
+            var monsters = from x in MonsterMap.Values orderby x.Id select x;
+            foreach (var monster in monsters)
+                streamWriter.WriteLine(
+                    $"{monster.Id} {monster.HitPoint} {monster.Attack} {monster.Defense} {monster.Money} {monster.Special}");
+            streamWriter.WriteLine();
+
+            // 商店
+            streamWriter.WriteLine("0 0 0 0 0 0");
+            streamWriter.WriteLine();
+
+            // 英雄
+            streamWriter.Write($"{Hero.HitPoint} {Hero.Attack} {Hero.Defense} {Hero.MagicDefense} ");
+            streamWriter.Write($"{Hero.Money} {Hero.YellowKeyCount} {Hero.BlueKeyCount} {Hero.RedKeyCount} ");
+            streamWriter.WriteLine($"{HeroFloor} {HeroPositionX} {HeroPositionY}");
         }
     }
 }

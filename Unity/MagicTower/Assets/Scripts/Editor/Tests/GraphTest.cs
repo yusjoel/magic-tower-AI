@@ -7,33 +7,13 @@ namespace Gempoll.Editor.Tests
 {
     public class GraphTest
     {
-        private string GetMapPath(string fileName)
-        {
-            // in Visual Studio
-            // <unity-project>\Temp\bin\Debug\
-            // in Unity Editor
-            // <unity-project>\Library\ScriptAssemblies
-            string basePath = Path.GetDirectoryName(typeof(GraphTest).Assembly.Location);
-            Assert.IsNotNull(basePath);
-
-            if (basePath.EndsWith("ScriptAssemblies"))
-                basePath = $"{basePath}/../..";
-            else
-                basePath = $"{basePath}/../../..";
-
-            // 尽量不要使用UnityEngine下的方法, 如Application.streamingAssetsPath
-            // 在VisualStudio中会报错: ECall 方法必须打包到系统模块中
-            string map1 = $"{basePath}/Assets/StreamingAssets/{fileName}";
-            return map1;
-        }
-
         /// <summary>
         ///     测试读取地图文件
         /// </summary>
         [Test]
         public void TestReadMap()
         {
-            string map1 = GetMapPath("map1.txt");
+            string map1 = Helper.GetStreamingAssetPath("map1.txt");
             using (var fileStream = File.OpenRead(map1))
             {
                 var scanner = new Scanner(fileStream);
@@ -104,7 +84,7 @@ namespace Gempoll.Editor.Tests
         /// <param name="mapName"></param>
         private void RunGraph(string mapName)
         {
-            string mapPath = GetMapPath($"{mapName}.txt");
+            string mapPath = Helper.GetStreamingAssetPath($"{mapName}.txt");
             using (var fileStream = File.OpenRead(mapPath))
             {
                 var scanner = new Scanner(fileStream);
@@ -127,7 +107,7 @@ namespace Gempoll.Editor.Tests
                 }
 
                 string result = stringBuilder.ToString();
-                string answerPath = GetMapPath($"{mapName}-answer.txt");
+                string answerPath = Helper.GetStreamingAssetPath($"{mapName}-answer.txt");
                 string expected = File.ReadAllText(answerPath);
 
                 Assert.AreEqual(expected, result);
@@ -141,7 +121,7 @@ namespace Gempoll.Editor.Tests
         /// <param name="shouldMerge"></param>
         private void BuildGraph(string mapName, bool shouldMerge)
         {
-            string mapPath = GetMapPath($"{mapName}.txt");
+            string mapPath = Helper.GetStreamingAssetPath($"{mapName}.txt");
             using (var fileStream = File.OpenRead(mapPath))
             {
                 var scanner = new Scanner(fileStream);
@@ -162,7 +142,7 @@ namespace Gempoll.Editor.Tests
                 string result = stringBuilder.ToString();
 
                 string postfix = shouldMerge ? "" : "-no-merge";
-                string nodesPath = GetMapPath($"{mapName}-nodes{postfix}.txt");
+                string nodesPath = Helper.GetStreamingAssetPath($"{mapName}-nodes{postfix}.txt");
                 string expected = File.ReadAllText(nodesPath);
 
                 Assert.AreEqual(expected, result);

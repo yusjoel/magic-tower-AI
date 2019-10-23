@@ -58,8 +58,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Editor\Tests\GameInfoTest.cs" />
     <Compile Include="Assets\Scripts\Editor\Tests\GraphTest.cs" />
     <Compile Include="Assets\Scripts\Editor\Tests\H5GameReaderTest.cs" />
+    <Compile Include="Assets\Scripts\Editor\Tests\Helper.cs" />
     <Compile Include="Assets\Scripts\Editor\Tests\ScannerTest.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Github/magic-tower-AI/Unity/MagicTower/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

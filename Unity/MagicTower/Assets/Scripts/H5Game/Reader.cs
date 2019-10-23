@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Gempoll.Extensions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
@@ -12,37 +13,94 @@ namespace Gempoll.H5Game
     public class Reader
     {
         /// <summary>
+        ///     使用到的所有物件编号列表
+        /// </summary>
+        private readonly List<int> objectIdList = new List<int>();
+
+        /// <summary>
         ///     工程路径
         /// </summary>
         private readonly string projectPath;
 
-        private List<string> floorIds;
+        /// <summary>
+        ///     地图高
+        /// </summary>
+        private int floorHeight;
 
-        public List<string> FloorIds
-        {
-            get { return floorIds; }
-        }
+        /// <summary>
+        ///     地图宽
+        /// </summary>
+        private int floorWidth;
 
+        /// <summary>
+        ///     构造函数
+        /// </summary>
+        /// <param name="projectPath"></param>
         public Reader(string projectPath)
         {
             this.projectPath = projectPath;
         }
 
-        public void ReadDataJs()
+        /// <summary>
+        ///     使用到的楼层
+        /// </summary>
+        public List<string> FloorIds { get; private set; }
+
+        /// <summary>
+        ///     读取所有的楼层信息
+        /// </summary>
+        public void ReadFloors()
         {
-            string dataJsPath = Path.Combine(projectPath, "data.js");
-            using (var streamReader = new StreamReader(File.OpenRead(dataJsPath)))
+            foreach (string floorId in FloorIds)
             {
-                streamReader.ReadLine();
-                string json = streamReader.ReadToEnd();
+                string floorJsPath = Path.Combine(projectPath, "floors/" + floorId + ".js");
+                string json = ReadJsFile(floorJsPath);
+
                 var jsonObject = JsonConvert.DeserializeObject(json) as JObject;
                 if (jsonObject == null)
                     return;
 
-                var main = jsonObject["main"].Value<JObject>();
-                floorIds = main["floorIds"].Values<string>().ToList();
+                floorWidth = jsonObject["width"].Value<int>();
+                floorHeight = jsonObject["height"].Value<int>();
+
+                var map = jsonObject["map"].Values<JArray>();
+                foreach (var row in map)
+                {
+                    var list = row.Values<int>();
+                    foreach (int objectId in list)
+                        objectIdList.AddUnique(objectId);
+                }
             }
         }
 
+        /// <summary>
+        ///     读取Js文件
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private string ReadJsFile(string path)
+        {
+            using (var streamReader = new StreamReader(File.OpenRead(path)))
+            {
+                streamReader.ReadLine();
+                string json = streamReader.ReadToEnd();
+                return json;
+            }
+        }
+
+        /// <summary>
+        ///     读取工程数据
+        /// </summary>
+        public void ReadDataJs()
+        {
+            string dataJsPath = Path.Combine(projectPath, "data.js");
+            string json = ReadJsFile(dataJsPath);
+            var jsonObject = JsonConvert.DeserializeObject(json) as JObject;
+            if (jsonObject == null)
+                return;
+
+            var main = jsonObject["main"].Value<JObject>();
+            FloorIds = main["floorIds"].Values<string>().ToList();
+        }
     }
 }
