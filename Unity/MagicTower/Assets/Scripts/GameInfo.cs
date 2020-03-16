@@ -93,7 +93,7 @@ namespace Gempoll
         /// <summary>
         ///     怪物信息
         /// </summary>
-        public Dictionary<int, Monster> MonsterMap;
+        public Dictionary<int, Monster> MonsterMap = new Dictionary<int, Monster>();
 
         /// <summary>
         ///     层的行数
@@ -133,7 +133,6 @@ namespace Gempoll
             DefenseOfShield = scanner.NextInt();
 
             // 读取怪物列表
-            MonsterMap = new Dictionary<int, Monster>();
             int monsterCount = scanner.NextInt();
             for (int i = 0; i < monsterCount; i++)
             {

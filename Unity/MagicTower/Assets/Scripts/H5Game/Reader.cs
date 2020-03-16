@@ -1,6 +1,7 @@
 ﻿using Gempoll.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +14,11 @@ namespace Gempoll.H5Game
     /// </summary>
     public class Reader
     {
+        /// <summary>
+        ///     怪物的编号与名称映射表
+        /// </summary>
+        private readonly Dictionary<int, string> monsterIdNameMap = new Dictionary<int, string>();
+
         /// <summary>
         ///     使用到的所有物件编号列表
         /// </summary>
@@ -55,6 +61,145 @@ namespace Gempoll.H5Game
         public void Read()
         {
             ReadDataJs();
+            ReadFloors();
+            ReadMapsJs();
+            ReadEnemiesJs();
+        }
+
+        /// <summary>
+        ///     读取物件信息
+        /// </summary>
+        private void ReadMapsJs()
+        {
+            string mapsJsPath = Path.Combine(projectPath, "maps.js");
+            string json = ReadJsFile(mapsJsPath);
+            var jsonObject = JsonConvert.DeserializeObject(json) as JObject;
+            if (jsonObject == null)
+                return;
+
+            foreach (var pair in jsonObject)
+            {
+                string key = pair.Key;
+                int objectId;
+                if (!int.TryParse(key, out objectId))
+                    continue;
+
+                if (!objectIdList.Contains(objectId))
+                    continue;
+
+                var info = pair.Value as JObject;
+                if (info == null)
+                    continue;
+
+                string className = info["cls"].Value<string>();
+                string objectName = info["id"].Value<string>();
+                ValidateObjectDefinition(objectId, className, objectName);
+
+                if (className.StartsWith("enemy")) monsterIdNameMap[objectId] = objectName;
+            }
+        }
+
+        /// <summary>
+        ///     验证物件的定义是否一致
+        /// </summary>
+        /// <param name="objectId"></param>
+        /// <param name="className"></param>
+        /// <param name="objectName"></param>
+        private void ValidateObjectDefinition(int objectId, string className, string objectName)
+        {
+            // 这里仅验证, 以后有需要进行映射
+            if (objectId == ObjectId.WALL)
+                Debug.Assert(className == "terrains");
+            else if (objectId == ObjectId.YELLOW_KEY)
+                Debug.Assert(objectName == "yellowKey");
+            else if (objectId == ObjectId.BLUE_KEY)
+                Debug.Assert(objectName == "blueKey");
+            else if (objectId == ObjectId.RED_KEY)
+                Debug.Assert(objectName == "redKey");
+            else if (objectId == ObjectId.GREEN_KEY)
+                Debug.Assert(objectName == "greenKey");
+            else if (objectId == ObjectId.RED_JEWEL)
+                Debug.Assert(objectName == "redJewel");
+            else if (objectId == ObjectId.BLUE_JEWEL)
+                Debug.Assert(objectName == "blueJewel");
+            else if (objectId == ObjectId.GREEN_JEWEL)
+                Debug.Assert(objectName == "greenJewel");
+            else if (objectId == ObjectId.RED_POTION)
+                Debug.Assert(objectName == "redPotion");
+            else if (objectId == ObjectId.BLUE_POTION)
+                Debug.Assert(objectName == "bluePotion");
+            else if (objectId == ObjectId.GREEN_POTION)
+                Debug.Assert(objectName == "greenPotion");
+            else if (objectId == ObjectId.YELLOW_POTION)
+                Debug.Assert(objectName == "yellowPotion");
+            else if (objectId == ObjectId.SWORD)
+                Debug.Assert(objectName == "sword1");
+            else if (objectId == ObjectId.SHIELD)
+                Debug.Assert(objectName == "shield1");
+            else if (objectId == ObjectId.DOOR_YELLOW)
+                Debug.Assert(objectName == "yellowDoor");
+            else if (objectId == ObjectId.DOOR_BLUE)
+                Debug.Assert(objectName == "blueDoor");
+            else if (objectId == ObjectId.DOOR_RED)
+                Debug.Assert(objectName == "redDoor");
+            else if (objectId == ObjectId.DOOR_GREEN)
+                Debug.Assert(objectName == "greenDoor");
+            else if (objectId == ObjectId.UPSTAIR)
+                Debug.Assert(objectName == "upFloor");
+            else if (objectId == ObjectId.DOWNSTAIR)
+                Debug.Assert(objectName == "downFloor");
+            else if (objectId > ObjectId.MONSTER_BOUND)
+                Debug.Assert(className.StartsWith("enemy"));
+            else
+                Console.WriteLine($"未定义物件: {objectId} {className} {objectName}");
+        }
+
+        /// <summary>
+        ///     读取怪物信息
+        /// </summary>
+        private void ReadEnemiesJs()
+        {
+            string enemiesJsPath = Path.Combine(projectPath, "enemys.js");
+            string json = ReadJsFile(enemiesJsPath);
+            var jsonObject = JsonConvert.DeserializeObject(json) as JObject;
+            if (jsonObject == null)
+                return;
+
+            foreach (var pair in monsterIdNameMap)
+            {
+                int monsterId = pair.Key;
+                string monsterName = pair.Value;
+
+                var monsterObject = jsonObject[monsterName] as JObject;
+                if (monsterObject == null)
+                    continue;
+
+                int hitPoint = monsterObject["hp"].Value<int>();
+                int attack = monsterObject["atk"].Value<int>();
+                int defense = monsterObject["def"].Value<int>();
+                int money = monsterObject["money"].Value<int>();
+
+                var specialToken = monsterObject["special"];
+                int special = 0;
+                if (specialToken.Type == JTokenType.Integer)
+                {
+                    special = specialToken.Value<int>();
+                }
+                else if (specialToken.Type == JTokenType.Array)
+                {
+                    var specials = specialToken as JArray;
+                    if (specials == null)
+                        continue;
+
+                    foreach (int value in specials.Values<int>())
+                        special |= value;
+                }
+
+                if (special > 0) Console.WriteLine($"{monsterName} {monsterObject["name"]} 拥有特殊能力 {specialToken}");
+
+                var monster = new Monster(monsterId, hitPoint, attack, defense, money, special);
+                GameInfo.MonsterMap[monsterId] = monster;
+            }
         }
 
         /// <summary>
