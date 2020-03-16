@@ -258,10 +258,22 @@ public class Graph {
         return false;
     }
 
+    private void printQueue(PriorityQueue<State> queue) {
+        System.out.println("=====QUEUE=====");
+        State[] array = new State[queue.size()];
+        queue.toArray(array);
+
+        int i = 0;
+        for (State state : array) {
+            System.out.println(String.format("%d, id: %d, cnt: %d, score: %d", i++, state.id, state.cnt, state.getScore()));
+        }
+    }
+
     public void run() {
         System.out.println("\n------ Starting BFS ------");
         State state=new State(this, list.get(0));
         State answer=null;
+        int stateId = 1;
 
         int index=0, solutions=0;
 
@@ -280,6 +292,11 @@ public class Graph {
 
         while (!queue.isEmpty()) {
             state=queue.poll();
+            //printQueue(queue);
+
+            //if(state.getScore() == 1035)
+            //    break;
+            //System.out.println("poll: " + state.current.toString());
 
             if (!set.add(state.hash())) continue;
 
@@ -316,13 +333,16 @@ public class Graph {
                 long hash=another.hash();
                 if (map.getOrDefault(hash, -1)>another.getScore()) continue;
                 map.put(hash, another.getScore());
+                another.id = stateId++;
                 queue.offer(another);
 
+                //printQueue(queue);
             }
 
             index++;
             if (index%1000==0) {
                 System.out.println(String.format("Calculating... %d calculated, %d still in queue.", index, queue.size()));
+                //break;
             }
 
         }

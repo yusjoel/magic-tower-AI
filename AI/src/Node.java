@@ -17,14 +17,14 @@ public class Node {
     ArrayList<Integer> doors;
     ArrayList<Monster> monsters;
     // 邻接表记录所有相邻节点
-    LinkedHashSet<Node> linked;
+    HashSet<Node> linked;
 
     public Node(int _type, int _f, int _x, int _y) {
         type=_type; f=_f; x=_x; y=_y;
         hero=null; item=null;
         monsters=new ArrayList<>();
         doors=new ArrayList<>();
-        linked=new LinkedHashSet<>();
+        linked=new HashSet<>();
     }
 
     public Node setHero(Hero _hero) {
@@ -83,7 +83,7 @@ public class Node {
 
     public Node merge(Node another, boolean[] visited) {
         Node node = new Node(type, another.f, another.x, another.y).setHero(new Hero(hero));
-        node.linked = new LinkedHashSet<>(linked);
+        node.linked = new HashSet<>(linked);
 
         // get item
         if (another.item!=null)

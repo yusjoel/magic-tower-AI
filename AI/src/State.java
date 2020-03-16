@@ -11,6 +11,7 @@ public class State {
     ArrayList<String> route;
     int shopTime;
     int cnt;
+    int id;
 
     public static final int STOP_COUNT = 45;
 
